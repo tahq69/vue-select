@@ -11,7 +11,7 @@ console.log(`Creating build of v${version}:`)
 module.exports = {
   entry: {
     build: "./src/main.ts",
-    example: "./src/example.ts",
+    example: "./src/example/main.ts",
   },
   output: {
     path: path.resolve(__dirname, "./dist"),

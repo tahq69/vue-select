@@ -1,19 +1,14 @@
-import Sample from "./Sample.vue"
+import _vue from "vue"
+import Select from "./Select.vue"
 
-export const sample = Sample
-
-export default function(vue, options) {
-  log(vue, options).then(() => "a")
+export interface IOptions {
+  componentPrefix: string
 }
 
-async function log(...args) {
-  const logger = new Promise<boolean>(r => {
-    setTimeout(() => {
-      // tslint:disable-next-line:no-console
-      console.log(args)
-      r(true)
-    }, 1 * 1000)
-  })
+// tslint:disable-next-line:variable-name
+export default function(Vue: typeof _vue, options?: IOptions) {
+  const defaults = { componentPrefix: "crip" }
+  const parameters = Object.assign(defaults, options)
 
-  return await logger
+  Vue.component(`${parameters.componentPrefix}-select`, Select)
 }
