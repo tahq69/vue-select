@@ -1,12 +1,11 @@
 import Vue from "vue"
 
-import CripSelect from "./main"
-import Sample from "./Sample.vue"
+import CripSelect, { sample } from "./main"
 
 Vue.use(CripSelect)
 
 const app = new Vue({
-  render: h => h(Sample),
+  render: h => h(sample),
 })
 
 app.$mount(document.getElementById("app"))

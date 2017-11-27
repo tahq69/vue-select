@@ -1,3 +1,7 @@
+import Sample from "./Sample.vue"
+
+export const sample = Sample
+
 export default function(vue, options) {
   log(vue, options).then(() => "a")
 }

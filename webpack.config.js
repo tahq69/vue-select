@@ -25,6 +25,9 @@ module.exports = {
       vue$: "vue/dist/vue.esm.js",
     },
   },
+  externals: {
+    vue: 'Vue'
+  },
   module: {
     rules: [
       {
@@ -49,11 +52,6 @@ module.exports = {
         },
       },
       {
-        test: /\.js$/,
-        loader: "babel-loader",
-        exclude: /node_modules/,
-      },
-      {
         test: /\.vue$/,
         loader: "vue-loader",
         options: {
@@ -75,6 +73,9 @@ module.exports = {
   },
   devtool: "#eval-source-map",
   plugins: [
+    new webpack.ProvidePlugin({
+      vue: "vue",
+    }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       progress: true,
