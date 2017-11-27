@@ -1,83 +1,111 @@
-const path = require('path')
-const webpack = require('webpack')
+const path = require("path")
+const webpack = require("webpack")
 
-let version = require('./package.json').version
-let parts = version.split('.')
+let version = require("./package.json").version
+let parts = version.split(".")
 let last = parts.splice(-1, 1)[0]
-version = parts.join('.') + '.' + (parseInt(last || 0) + 1)
+version = parts.join(".") + "." + (parseInt(last || 0) + 1)
 
 console.log(`Creating build of v${version}:`)
 
 module.exports = {
-    entry: {
-      build: './src/main.js',
-      example:  './examples/main.js'
+  entry: {
+    build: "./src/main.ts",
+    example: "./src/example.ts",
+  },
+  output: {
+    path: path.resolve(__dirname, "./dist"),
+    publicPath: "/dist/",
+    filename: "[name].js",
+  },
+  resolve: {
+    extensions: [".ts", ".js", ".vue", ".json"],
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      vue$: "vue/dist/vue.esm.js",
     },
-    output: {
-      path: path.resolve(__dirname, './dist'),
-      publicPath: '/dist/',
-      filename: '[name].js',
-      libraryTarget: 'umd'
-    },
-    module: {
-      rules: [{
+  },
+  module: {
+    rules: [
+      {
+        enforce: "pre",
+        test: /\.ts$/,
+        loader: "tslint-loader",
+        exclude: /node_modules|vue\/src|vendor\/*/,
+        options: {
+          configFile: "tslint.json",
+        },
+      },
+      {
+        test: /\.ts$/,
+        exclude: /node_modules|vue\/src|vendor\/*/,
+        loader: "ts-loader",
+        include: [
+          path.resolve(__dirname, "./src"),
+          path.resolve(__dirname, "./examples"),
+        ],
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+        },
+      },
+      {
+        test: /\.js$/,
+        loader: "babel-loader",
+        exclude: /node_modules/,
+      },
+      {
         test: /\.vue$/,
-        loader: 'vue-loader',
+        loader: "vue-loader",
         options: {
           loaders: {
-            scss: 'vue-style-loader!css-loader!sass-loader',
-            sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-          }
-        }
-      }, {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          exclude: /node_modules/
-      },]
-    },
-    resolve: {
-        alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        }
-    },
-    devServer: {
-        historyApiFallback: true,
-        noInfo: true
-    },
-    performance: {
-        hints: false
-    },
-    devtool: '#eval-source-map',
-    plugins: [
-        new webpack.LoaderOptionsPlugin({
-            minimize: true,
-            progress: true,
-            hide_modules: true
-        }),
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-        }),
-        new webpack.BannerPlugin({
-            banner: `/*!
+            scss: "vue-style-loader!css-loader!sass-loader",
+            sass: "vue-style-loader!css-loader!sass-loader?indentedSyntax",
+            esModule: true,
+          },
+        },
+      },
+    ],
+  },
+  devServer: {
+    historyApiFallback: true,
+    noInfo: true,
+  },
+  performance: {
+    hints: false,
+  },
+  devtool: "#eval-source-map",
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      progress: true,
+      hide_modules: true,
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(
+        process.env.NODE_ENV || "development"
+      ),
+    }),
+    new webpack.BannerPlugin({
+      banner: `/*!
 * Crip Vue Select v${version}
 * Forged by Igors Krasjukovs <tahq69@gmail.com>
 * Released under the MIT License.
 */`,
-            raw: true,
-            entryOnly: true
-        }),
-    ]
+      raw: true,
+      entryOnly: true,
+    }),
+  ],
 }
 
-if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map'
-    // http://vue-loader.vuejs.org/en/workflow/production.html
-    module.exports.plugins = (module.exports.plugins || []).concat([
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
-            }
-        })
-    ])
+if (process.env.NODE_ENV === "production") {
+  module.exports.devtool = "#source-map"
+  // http://vue-loader.vuejs.org/en/workflow/production.html
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false,
+      },
+    }),
+  ])
 }
