@@ -28,7 +28,7 @@ Vue.use(CripSelect)
 export default {
   data() {
     return {
-      options: ['one', 'two'],
+      options: [{ text: "one", value: 1 }, { text: "two", value: 2 }],
       selectedValue: "default",
     }
   }

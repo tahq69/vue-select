@@ -6,7 +6,7 @@ import { Watch } from "vue-property-decorator"
 
 @Component({ name: "Example" })
 export default class Example extends Vue {
-  public options = ["one", "two"]
+  public options = [{ text: "one", value: 1 }, { text: "two", value: 2 }]
 
   public selectedValue = null
 
