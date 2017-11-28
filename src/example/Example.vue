@@ -7,26 +7,33 @@ import { Watch } from "vue-property-decorator"
 @Component({ name: "Example" })
 export default class Example extends Vue {
   public options = [
-    { text: "one", value: 1 },
-    { text: "two", value: 2 },
-    { text: "three", value: 3 },
-    { text: "four", value: 4 },
-    { text: "five", value: 5 },
-    { text: "six", value: 6 },
-    { text: "seven", value: 7 },
-    { text: "eight", value: 8 },
-    { text: "nine", value: 9 },
-    { text: "ten", value: 10 },
-    { text: "eleven", value: 11 },
-    { text: "twelve", value: 12 },
-    { text: "thirteen", value: 13 },
-    { text: "fourteen", value: 14 },
-    { text: "fifteen", value: 15 },
-    { text: "sixteen", value: 16 },
+    { text: "one two", value: { num: 12, flag: "lv" } },
+    { text: "one two three", value: { num: 123, flag: "lv" } },
+    { text: "one", value: { num: 1, flag: "lv" } },
+    { text: "two", value: { num: 2, flag: "lv" } },
+    { text: "three", value: { num: 3, flag: "lv" } },
+    { text: "four", value: { num: 4, flag: "lv" } },
+    { text: "five", value: { num: 5, flag: "lv" } },
+    { text: "six", value: { num: 6, flag: "lv" } },
+    { text: "seven", value: { num: 7, flag: "lv" } },
+    { text: "eight", value: { num: 8, flag: "lv" } },
+    { text: "nine", value: { num: 9, flag: "lv" } },
+    { text: "ten", value: { num: 10, flag: "lv" } },
+    { text: "eleven", value: { num: 11, flag: "lv" } },
+    { text: "twelve", value: { num: 12, flag: "lv" } },
+    { text: "thirteen", value: { num: 13, flag: "lv" } },
+    { text: "fourteen", value: { num: 14, flag: "lv" } },
+    { text: "fifteen", value: { num: 15, flag: "lv" } },
+    { text: "sixteen", value: { num: 16, flag: "lv" } },
   ]
 
   public selectedValue = null
+
   public selectedValue2 = null
+
+  public textRender(o: { text: string; value: { num: number; flag: string } }) {
+    return `${o.value.num} <i>${o.value.flag}</i> ${o.text}`
+  }
 
   public mounted() {
     console.log("Example mounted")
@@ -42,7 +49,11 @@ export default class Example extends Vue {
           @submit.prevent="submit"
       >
         <div class="form-group">
-          <CripSelect :options="options" v-model="selectedValue" />
+          <CripSelect
+              :options="options"
+              :text="textRender"
+              v-model="selectedValue"
+          />
         </div>
 
         <!--<div class="form-group">

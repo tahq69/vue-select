@@ -24,11 +24,6 @@ export default class CripOption extends Vue {
   public select(option: IOption) {
     this.$emit("select", option)
   }
-
-  @Watch("criteria")
-  private onCriteriaUpdate(criteria) {
-    this.$emit("criteriaValue", criteria)
-  }
 }
 </script>
 

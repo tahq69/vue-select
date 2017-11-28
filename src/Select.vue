@@ -6,7 +6,7 @@ import { Prop, Watch } from "vue-property-decorator"
 import Options from "./Options.vue"
 
 import { IOption } from "./Contracts"
-import { highlight } from "./helpers"
+import { highlight, stripHTML } from "./helpers"
 
 @Component({
   components: { Options },
@@ -40,7 +40,8 @@ export default class CripSelect extends Vue {
 
     return this.options.filter(option => {
       const text = this.text(option).toLowerCase()
-      return text.indexOf(criteria) > -1
+      const clearText = stripHTML(text)
+      return clearText.indexOf(criteria) > -1
     })
   }
 
@@ -69,7 +70,7 @@ export default class CripSelect extends Vue {
     // Close dropdown only when click binding is already propongadated.
     setTimeout(() => {
       this.isOpen = false
-      this.criteria = this.checkpoint ? this.text(this.checkpoint) : ""
+      this.criteria = this.checkpoint ? this.clearText(this.checkpoint) : ""
     }, 100)
   }
 
@@ -83,7 +84,7 @@ export default class CripSelect extends Vue {
       this.options.push(this.checkpoint)
     }
 
-    this.criteria = this.text(this.checkpoint)
+    this.criteria = this.clearText(this.checkpoint)
     this.current = this.dropdownOptions.indexOf(this.checkpoint)
     this.isOpen = false
   }
@@ -118,12 +119,8 @@ export default class CripSelect extends Vue {
     this.isOpen = false
 
     this.createCheckpoint(option)
-    this.criteria = this.text(this.checkpoint)
+    this.criteria = this.clearText(this.checkpoint)
     this.$emit("input", option.value)
-  }
-
-  public optionText(option: IOption) {
-    return this.text(option)
   }
 
   private detectOptionForSelect() {
@@ -143,6 +140,10 @@ export default class CripSelect extends Vue {
     this.checkpoint = option
   }
 
+  private clearText(option: IOption) {
+    return stripHTML(this.text(option))
+  }
+
   private created() {
     // TODO: get async value or value and create checkpoint from it
   }
@@ -155,9 +156,8 @@ export default class CripSelect extends Vue {
       class="crip-select dropdown"
   >
     <input
-        class="form-control crip-input"
-        type="text"
         :value="criteria"
+
         @input="onInput($event.target.value)"
         @focus="onFocus"
         @blur="onBlur"
@@ -166,13 +166,18 @@ export default class CripSelect extends Vue {
         @keydown.enter="onEnter"
         @keydown.down.prevent="onDown"
         @keydown.up.prevent="onUp"
+
+        type="text"
+        class="form-control crip-input"
     />
     <Options
         :options="dropdownOptions"
-        :text="optionText"
+        :text="text"
         :current="current"
         :criteria="criteria"
+
         @select="selectOption"
+
         class="dropdown-menu crip-options"
     />
   </div>

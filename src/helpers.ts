@@ -1,3 +1,6 @@
+const escape = document.createElement("textarea")
+const strip = document.createElement("div")
+
 export function highlight(text: string, pattern: string) {
   if (pattern === "") return text
 
@@ -9,8 +12,12 @@ export function highlight(text: string, pattern: string) {
 }
 
 export function escapeHTML(html: string): string {
-  const escape = document.createElement("textarea")
   escape.textContent = html
 
   return escape.innerHTML
+}
+
+export function stripHTML(html: string): string {
+  strip.innerHTML = html
+  return strip.textContent || strip.innerText || ""
 }
