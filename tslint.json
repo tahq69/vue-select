@@ -12,6 +12,7 @@
     "trailing-comma": { "severity": "warning" },
     "variable-name": { "options": "allow-snake-case" },
     "no-bitwise": false,
-    "no-consecutive-blank-lines": false
+    "no-consecutive-blank-lines": false,
+    "no-console": false
   }
 }

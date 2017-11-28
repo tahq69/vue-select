@@ -3,9 +3,15 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
-import { IOption } from "./Contracts"
+import Options from "./Options.vue"
 
-@Component({ name: "CripSelect" })
+import { IOption } from "./Contracts"
+import { highlight } from "./helpers"
+
+@Component({
+  components: { Options },
+  name: "CripSelect",
+})
 export default class CripSelect extends Vue {
   @Prop({ default: null })
   public value?: IOption
@@ -16,7 +22,10 @@ export default class CripSelect extends Vue {
   @Prop({ type: Function, default: (o: IOption) => o.text })
   public text: (o: IOption) => string
 
-  public criteria: string
+  @Prop({ type: Number, default: 12 })
+  public count: number
+
+  public criteria: string = ""
 
   public isOpen: boolean = false
 
@@ -24,8 +33,32 @@ export default class CripSelect extends Vue {
 
   private checkpoint: IOption = null
 
+  public get filteredOptions() {
+    if (this.criteria.trim() === "") return this.options
+
+    const criteria = this.criteria.toLowerCase()
+
+    return this.options.filter(option => {
+      const text = this.text(option).toLowerCase()
+      return text.indexOf(criteria) > -1
+    })
+  }
+
   public get dropdownOptions() {
-    return this.options
+    if (this.filteredOptions.length > 0) {
+      const len = this.filteredOptions.length
+      const visibleCount = len >= this.count ? this.count : len
+      return this.filteredOptions.slice(0, visibleCount)
+    }
+
+    return []
+  }
+
+  public onInput(criteria: string) {
+    this.isOpen = true
+    this.current = -1
+    this.criteria = criteria
+    // TODO: if is async component we should call for new data for options list
   }
 
   public onFocus(e: Event) {
@@ -34,7 +67,10 @@ export default class CripSelect extends Vue {
 
   public onBlur(e: Event) {
     // Close dropdown only when click binding is already propongadated.
-    setTimeout(() => (this.isOpen = false), 100)
+    setTimeout(() => {
+      this.isOpen = false
+      this.criteria = this.checkpoint ? this.text(this.checkpoint) : ""
+    }, 100)
   }
 
   public onCtrlSpace(e: Event) {
@@ -47,7 +83,7 @@ export default class CripSelect extends Vue {
       this.options.push(this.checkpoint)
     }
 
-    this.criteria = this.checkpoint.text
+    this.criteria = this.text(this.checkpoint)
     this.current = this.dropdownOptions.indexOf(this.checkpoint)
     this.isOpen = false
   }
@@ -82,8 +118,12 @@ export default class CripSelect extends Vue {
     this.isOpen = false
 
     this.createCheckpoint(option)
-    this.criteria = option.text
+    this.criteria = this.text(this.checkpoint)
     this.$emit("input", option.value)
+  }
+
+  public optionText(option: IOption) {
+    return this.text(option)
   }
 
   private detectOptionForSelect() {
@@ -106,13 +146,6 @@ export default class CripSelect extends Vue {
   private created() {
     // TODO: get async value or value and create checkpoint from it
   }
-
-  @Watch("criteria")
-  private onCriteriaChanged(newCriteria, oldCriteria): void {
-    // tslint:disable-next-line:no-console
-    console.log({ newCriteria, oldCriteria })
-    // TODO: if is async component we should call for new data for options list
-  }
 }
 </script>
 
@@ -125,6 +158,7 @@ export default class CripSelect extends Vue {
         class="form-control crip-input"
         type="text"
         :value="criteria"
+        @input="onInput($event.target.value)"
         @focus="onFocus"
         @blur="onBlur"
         @keydown.space.ctrl="onCtrlSpace"
@@ -133,18 +167,14 @@ export default class CripSelect extends Vue {
         @keydown.down.prevent="onDown"
         @keydown.up.prevent="onUp"
     />
-
-    <ul class="dropdown-menu crip-options">
-      <li
-          v-for="(option, index) in dropdownOptions"
-          :key="option.text"
-          :class="{'active': isActive(index)}"
-      >
-        <a @click.prevent="selectOption(option)" href="#">
-          {{ text(option) }}
-        </a>
-      </li>
-    </ul>
+    <Options
+        :options="dropdownOptions"
+        :text="optionText"
+        :current="current"
+        :criteria="criteria"
+        @select="selectOption"
+        class="dropdown-menu crip-options"
+    />
   </div>
 </template>
 

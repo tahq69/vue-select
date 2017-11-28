@@ -7,8 +7,8 @@ export interface IOptions {
 
 // tslint:disable-next-line:variable-name
 export default function(Vue: typeof _vue, options?: IOptions) {
-  const defaults = { componentPrefix: "crip" }
+  const defaults = { componentPrefix: "Crip" }
   const parameters = Object.assign(defaults, options)
 
-  Vue.component(`${parameters.componentPrefix}-select`, Select)
+  Vue.component(`${parameters.componentPrefix}Select`, Select)
 }
