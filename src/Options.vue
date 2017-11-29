@@ -3,34 +3,29 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
+import Option from "./Option"
 import CripOption from "./Option.vue"
-
-import { IOption } from "./Contracts"
-import { highlight } from "./helpers"
 
 @Component({
   components: { CripOption },
   name: "CripOptions",
 })
-export default class CripOptions extends Vue {
+export default class CripOptions<T> extends Vue {
   @Prop({ type: Array, required: true })
-  public options: IOption[]
+  public options: Option<T>[]
 
   @Prop({ type: String, required: true })
   public criteria: string
 
-  @Prop({ type: Function, required: true })
-  public text: (o: IOption) => string
-
   @Prop({ type: Number, required: true })
   public current: number
 
-  public select(option: IOption) {
-    this.$emit("select", option)
+  public get currentValue() {
+    return this.options[this.current] || { key: 0 }
   }
 
-  public isActive(index: number) {
-    return index === this.current
+  public select(option: Option<T>) {
+    this.$emit("select", option)
   }
 }
 </script>
@@ -38,11 +33,10 @@ export default class CripOptions extends Vue {
 <template>
   <ul>
     <CripOption
-        v-for="(option, index) in options"
-        :key="option.text"
-        :class="{'active': isActive(index)}"
+        v-for="option in options"
+        :key="option.key"
+        :class="{'active': option.isActive(currentValue.key)}"
         :selectOption="selectOption"
-        :text="text(option)"
         :option="option"
         :criteria="criteria"
         @select="select"

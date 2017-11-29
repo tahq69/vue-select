@@ -3,25 +3,18 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
-import { IOption } from "./Contracts"
 import { highlight } from "./helpers"
+import CripOption from "./Option"
 
 @Component({ name: "CripOption" })
-export default class CripOption extends Vue {
+export default class COption<T> extends Vue {
   @Prop({ type: Object, required: true })
-  public option: IOption
-
-  @Prop({ type: String, required: true })
-  public text: string
+  public option: CripOption<T>
 
   @Prop({ type: String, required: true })
   public criteria: string
 
-  public get optionText() {
-    return highlight(this.text, this.criteria)
-  }
-
-  public select(option: IOption) {
+  public select(option: CripOption<T>) {
     this.$emit("select", option)
   }
 }
@@ -31,7 +24,7 @@ export default class CripOption extends Vue {
   <li>
     <a
         @click.prevent="select(option)"
-        v-html="optionText"
+        v-html="option.highlightedText(criteria)"
         href="#"
     ></a>
   </li>

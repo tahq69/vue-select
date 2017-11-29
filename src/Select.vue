@@ -4,26 +4,29 @@ import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
 import Options from "./Options.vue"
+import Tags from "./Tags.vue"
 
-import { IOption } from "./Contracts"
 import { highlight, stripHTML } from "./helpers"
+import CripOption from "./Option"
 
 @Component({
-  components: { Options },
+  components: { Options, Tags },
   name: "CripSelect",
 })
-export default class CripSelect extends Vue {
-  @Prop({ default: null })
-  public value?: IOption
-
+export default class CripSelect<T> extends Vue {
   @Prop({ type: Array, default: [] })
-  public options: IOption[]
+  public options: T[]
 
-  @Prop({ type: Function, default: (o: IOption) => o.text })
-  public text: (o: IOption) => string
+  @Prop({ type: Function, default: value => value })
+  public text: (value: T) => string
 
   @Prop({ type: Number, default: 12 })
   public count: number
+
+  @Prop({ type: Boolean, default: false })
+  public tags: boolean
+
+  public cripOptions: CripOption<T>[] = []
 
   public criteria: string = ""
 
@@ -31,17 +34,18 @@ export default class CripSelect extends Vue {
 
   private current: number = -1
 
-  private checkpoint: IOption = null
+  private checkpoint: CripOption<T> = null
 
   public get filteredOptions() {
-    if (this.criteria.trim() === "") return this.options
+    if (this.criteria.trim() === "") return this.cripOptions
 
     const criteria = this.criteria.toLowerCase()
 
-    return this.options.filter(option => {
-      const text = this.text(option).toLowerCase()
-      const clearText = stripHTML(text)
-      return clearText.indexOf(criteria) > -1
+    return this.cripOptions.filter(option => {
+      const text = option.text().toLowerCase()
+      const plainText = option.plainText()
+
+      return plainText.indexOf(criteria) > -1
     })
   }
 
@@ -49,6 +53,7 @@ export default class CripSelect extends Vue {
     if (this.filteredOptions.length > 0) {
       const len = this.filteredOptions.length
       const visibleCount = len >= this.count ? this.count : len
+
       return this.filteredOptions.slice(0, visibleCount)
     }
 
@@ -70,7 +75,7 @@ export default class CripSelect extends Vue {
     // Close dropdown only when click binding is already propongadated.
     setTimeout(() => {
       this.isOpen = false
-      this.criteria = this.checkpoint ? this.clearText(this.checkpoint) : ""
+      this.criteria = this.checkpoint ? this.checkpoint.plainText() : ""
     }, 100)
   }
 
@@ -79,12 +84,14 @@ export default class CripSelect extends Vue {
   }
 
   public onEscape(e: Event) {
-    // setup last checkpoint as current one
-    if (this.dropdownOptions.indexOf(this.checkpoint) === -1) {
-      this.options.push(this.checkpoint)
-    }
+    this.criteria = this.checkpoint.plainText()
 
-    this.criteria = this.clearText(this.checkpoint)
+    // TODO: Assume this is not correct behavior
+    // setup last checkpoint as current one
+    /*if (this.dropdownOptions.indexOf(this.checkpoint) === -1) {
+      this.options.push(this.checkpoint)
+    }*/
+
     this.current = this.dropdownOptions.indexOf(this.checkpoint)
     this.isOpen = false
   }
@@ -111,21 +118,18 @@ export default class CripSelect extends Vue {
     }
   }
 
-  public isActive(index) {
-    return index === this.current
-  }
-
-  public selectOption(option: IOption): void {
+  public selectOption(option: CripOption<T>): void {
     this.isOpen = false
 
     this.createCheckpoint(option)
-    this.criteria = this.clearText(this.checkpoint)
+    this.criteria = option.plainText()
     this.$emit("input", option.value)
   }
 
   private detectOptionForSelect() {
-    if (this.current === -1) {
+    if (this.current === -1 && this.tags === true) {
       this.addTag()
+
       return
     }
 
@@ -136,16 +140,20 @@ export default class CripSelect extends Vue {
     // TODO: add tagging option for select
   }
 
-  private createCheckpoint(option: IOption) {
+  private createCheckpoint(option: CripOption<T>) {
     this.checkpoint = option
   }
 
-  private clearText(option: IOption) {
-    return stripHTML(this.text(option))
+  private created() {
+    this.onOptionsChange(this.options)
+    // TODO: get async value or value and create checkpoint from it
   }
 
-  private created() {
-    // TODO: get async value or value and create checkpoint from it
+  @Watch("options")
+  private onOptionsChange(options: T[]) {
+    this.cripOptions = this.options.map((o: T) => {
+      return new CripOption(o, this.text)
+    })
   }
 }
 </script>
@@ -155,29 +163,30 @@ export default class CripSelect extends Vue {
       :class="{'open': isOpen}"
       class="crip-select dropdown"
   >
-    <input
-        :value="criteria"
+    <div class="input-group">
+      <Tags
+          v-if="tags"
+      />
+      <input
+          :value="criteria"
+          @input="onInput($event.target.value)"
+          @focus="onFocus"
+          @blur="onBlur"
+          @keydown.space.ctrl="onCtrlSpace"
+          @keydown.esc="onEscape"
+          @keydown.enter="onEnter"
+          @keydown.down.prevent="onDown"
+          @keydown.up.prevent="onUp"
+          type="text"
+          class="form-control crip-input"
+      />
+    </div>
 
-        @input="onInput($event.target.value)"
-        @focus="onFocus"
-        @blur="onBlur"
-        @keydown.space.ctrl="onCtrlSpace"
-        @keydown.esc="onEscape"
-        @keydown.enter="onEnter"
-        @keydown.down.prevent="onDown"
-        @keydown.up.prevent="onUp"
-
-        type="text"
-        class="form-control crip-input"
-    />
     <Options
         :options="dropdownOptions"
-        :text="text"
-        :current="current"
         :criteria="criteria"
-
+        :current="current"
         @select="selectOption"
-
         class="dropdown-menu crip-options"
     />
   </div>
