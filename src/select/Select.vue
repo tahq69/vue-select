@@ -3,18 +3,18 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
-import Options from "./Options.vue"
-import Tags from "./Tags.vue"
+import Options from "./../options/Options.vue"
+import Tags from "./../tags/Tags.vue"
 
-import { highlight, stripHTML } from "./helpers"
-import CripOption from "./Option"
+import { highlight, stripHTML } from "./../helpers"
+import CripOption from "./../Option"
 
 @Component({
   components: { Options, Tags },
   name: "CripSelect",
 })
 export default class CripSelect<T> extends Vue {
-  @Prop({ type: Array, default: [] })
+  @Prop({ type: Array, default: () => [] })
   public options: T[]
 
   @Prop({ type: Function, default: value => value })
@@ -26,7 +26,7 @@ export default class CripSelect<T> extends Vue {
   @Prop({ type: Boolean, default: false })
   public tags: boolean
 
-  public cripOptions: CripOption<T>[] = []
+  public cripOptions: Array<CripOption<T>> = []
 
   public criteria: string = ""
 

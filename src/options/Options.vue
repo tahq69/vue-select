@@ -3,8 +3,8 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
-import Option from "./Option"
-import CripOption from "./Option.vue"
+import Option from "./../Option"
+import CripOption from "./../option/Option.vue"
 
 @Component({
   components: { CripOption },
@@ -12,7 +12,7 @@ import CripOption from "./Option.vue"
 })
 export default class CripOptions<T> extends Vue {
   @Prop({ type: Array, required: true })
-  public options: Option<T>[]
+  public options: Array<Option<T>>
 
   @Prop({ type: String, required: true })
   public criteria: string

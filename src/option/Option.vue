@@ -3,8 +3,8 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
-import { highlight } from "./helpers"
-import CripOption from "./Option"
+import { highlight } from "./../helpers"
+import CripOption from "./../Option"
 
 @Component({ name: "CripOption" })
 export default class COption<T> extends Vue {

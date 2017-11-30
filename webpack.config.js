@@ -25,9 +25,6 @@ module.exports = {
       vue$: "vue/dist/vue.esm.js",
     },
   },
-  externals: {
-    vue: 'Vue'
-  },
   module: {
     rules: [
       {
@@ -96,6 +93,12 @@ module.exports = {
       entryOnly: true,
     }),
   ],
+}
+
+if (process.env.NODE_ENV !== "test") {
+  module.exports.externals = {
+    vue: "Vue",
+  }
 }
 
 if (process.env.NODE_ENV === "production") {

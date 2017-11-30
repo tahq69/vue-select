@@ -3,11 +3,11 @@ import Vue from "vue"
 import Component from "vue-class-component"
 import { Prop, Watch } from "vue-property-decorator"
 
-import CripOption from "./Option"
+import CripOption from "./../Option"
 
 @Component({ name: "CripTags" })
 export default class CripTags<T> extends Vue {
-  public tags: CripOption<T>[] = []
+  public tags: Array<CripOption<T>> = []
 }
 </script>
 

@@ -1,5 +1,5 @@
 import _vue from "vue"
-import Select from "./Select.vue"
+import Select from "./select/Select.vue"
 
 export interface IOptions {
   componentPrefix: string
