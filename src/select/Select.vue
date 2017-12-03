@@ -1,3 +1,37 @@
+<template>
+  <div
+      :class="{'open': isOpen}"
+      class="crip-select dropdown"
+  >
+    <div class="input-group">
+      <Tags
+          v-if="tags"
+      />
+      <input
+          :value="criteria"
+          @input="onInput($event.target.value)"
+          @focus="onFocus"
+          @blur="onBlur"
+          @keydown.space.ctrl="onCtrlSpace"
+          @keydown.esc="onEscape"
+          @keydown.enter="onEnter"
+          @keydown.down.prevent="onDown"
+          @keydown.up.prevent="onUp"
+          type="text"
+          class="form-control crip-input"
+      />
+    </div>
+
+    <Options
+        :options="dropdownOptions"
+        :criteria="criteria"
+        :current="current"
+        @select="selectOption"
+        class="dropdown-menu crip-options"
+    />
+  </div>
+</template>
+
 <script lang="ts">
 import Vue from "vue"
 import Component from "vue-class-component"
@@ -157,40 +191,6 @@ export default class CripSelect<T> extends Vue {
   }
 }
 </script>
-
-<template>
-  <div
-      :class="{'open': isOpen}"
-      class="crip-select dropdown"
-  >
-    <div class="input-group">
-      <Tags
-          v-if="tags"
-      />
-      <input
-          :value="criteria"
-          @input="onInput($event.target.value)"
-          @focus="onFocus"
-          @blur="onBlur"
-          @keydown.space.ctrl="onCtrlSpace"
-          @keydown.esc="onEscape"
-          @keydown.enter="onEnter"
-          @keydown.down.prevent="onDown"
-          @keydown.up.prevent="onUp"
-          type="text"
-          class="form-control crip-input"
-      />
-    </div>
-
-    <Options
-        :options="dropdownOptions"
-        :criteria="criteria"
-        :current="current"
-        @select="selectOption"
-        class="dropdown-menu crip-options"
-    />
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .crip-select {

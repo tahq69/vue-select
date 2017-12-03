@@ -1,3 +1,13 @@
+<template>
+  <li>
+    <a
+        @click.prevent="select(option)"
+        v-html="option.highlightedText(criteria)"
+        href="#"
+    ></a>
+  </li>
+</template>
+
 <script lang="ts">
 import Vue from "vue"
 import Component from "vue-class-component"
@@ -19,14 +29,3 @@ export default class COption<T> extends Vue {
   }
 }
 </script>
-
-<template>
-  <li>
-    <a
-        @click.prevent="select(option)"
-        v-html="option.highlightedText(criteria)"
-        href="#"
-    ></a>
-  </li>
-</template>
-

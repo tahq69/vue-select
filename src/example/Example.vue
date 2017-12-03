@@ -1,3 +1,31 @@
+<template>
+  <div class="container">
+    <div class="row">
+      <form
+          class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2"
+          @submit.prevent="submit"
+      >
+        <div class="form-group">
+          <CripSelect
+              :options="options"
+              :text="textRender"
+              v-model="selectedValue"
+          />
+        </div>
+
+        <!--<div class="form-group">
+          <CripSelect :options="options" v-model="selectedValue2" />
+        </div>-->
+
+        <div>1) {{ selectedValue }}</div>
+
+        <!--<div>2) {{ selectedValue2 }}</div>-->
+
+      </form>
+    </div>
+  </div>
+</template>
+
 <script lang="ts">
 // tslint:disable:no-console
 import Vue from "vue"
@@ -40,32 +68,3 @@ export default class Example extends Vue {
   }
 }
 </script>
-
-<template>
-  <div class="container">
-    <div class="row">
-      <form
-          class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2"
-          @submit.prevent="submit"
-      >
-        <div class="form-group">
-          <CripSelect
-              :options="options"
-              :text="textRender"
-              v-model="selectedValue"
-          />
-        </div>
-
-        <!--<div class="form-group">
-          <CripSelect :options="options" v-model="selectedValue2" />
-        </div>-->
-
-        <div>1) {{ selectedValue }}</div>
-
-        <!--<div>2) {{ selectedValue2 }}</div>-->
-
-      </form>
-    </div>
-  </div>
-</template>
-
