@@ -32,7 +32,7 @@ describe("Options.vue", () => {
     )
   })
 
-  /*it("should add active class when current is index of an array", done => {
+  it("should add active class when current is index of an array", () => {
     const vm: any = getVm({
       options: [
         {
@@ -45,13 +45,8 @@ describe("Options.vue", () => {
       current: 0,
     })
 
-    vm.criteria = "new-value"
-
-    Vue.nextTick(() => {
-      expect(vm.$el.textContent).toBe("new-value_text")
-      done()
-    })
-  })*/
+    expect(vm.$el.firstChild.className).toBe("active")
+  })
 })
 
 interface Option {

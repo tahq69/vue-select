@@ -68,6 +68,9 @@ export default class CripSelect<T> extends Vue {
   @Prop({ type: Boolean, default: false })
   public allowClear: boolean
 
+  @Prop({type: Function})
+  public async: (criteria: string) => Promise<T[]>
+
   @Prop({ type: Boolean, default: false })
   public tags: boolean
 

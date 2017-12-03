@@ -6,26 +6,35 @@
           @submit.prevent="submit"
       >
         <div class="form-group">
+          <label class="control-label">Simple options</label>
           <CripSelect
               :options="options"
               :text="textRender"
               v-model="selectedValue"
           />
+          <span class="help-block">{{ selectedValue }}</span>
         </div>
 
         <div class="form-group">
+          <label class="control-label">Simple options and clear</label>
           <CripSelect
               :options="options"
               :text="textRender"
               v-model="selectedValue2"
               :allow-clear="true"
           />
+          <span class="help-block">{{ selectedValue2 }}</span>
         </div>
 
-        <div>1) {{ selectedValue }}</div>
-
-        <div>2) {{ selectedValue2 }}</div>
-
+        <div class="form-group">
+          <label class="control-label">Async options</label>
+          <CripSelect
+              :async="searchOptions"
+              :text="textRender"
+              v-model="selectedValue3"
+          />
+          <span class="help-block">{{ selectedValue3 }}</span>
+        </div>
       </form>
     </div>
   </div>
@@ -61,11 +70,22 @@ export default class Example extends Vue {
   ]
 
   public selectedValue = null
-
   public selectedValue2 = null
+  public selectedValue3 = null
 
   public textRender(o: { text: string; value: { num: number; flag: string } }) {
     return `${o.value.num} <i>${o.value.flag}</i> ${o.text}`
+  }
+
+  public searchOptions(criteria) {
+    console.log("searching", criteria)
+    return new Promise(r => {
+      setTimeout(() => {
+        const results = this.options.filter(o => o.text.indexOf(criteria) >= 0)
+        console.log("searching", "completed", criteria, results)
+        r(results)
+      }, 500)
+    })
   }
 
   public mounted() {
