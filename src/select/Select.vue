@@ -3,7 +3,7 @@
       :class="{'open': isOpen}"
       class="crip-select dropdown"
   >
-    <div class="input-group">
+    <div :class="{'input-group': tags || allowClear}">
       <Tags
           v-if="tags"
       />
@@ -20,6 +20,14 @@
           type="text"
           class="form-control crip-input"
       />
+
+      <span v-if="allowClear" class="input-group-btn c-close-btn">
+        <button
+            @click.prevent="deselectOption"
+            class="btn btn-default"
+            type="button"
+        >×</button>
+      </span>
     </div>
 
     <Options
@@ -56,6 +64,9 @@ export default class CripSelect<T> extends Vue {
 
   @Prop({ type: Number, default: 12 })
   public count: number
+
+  @Prop({ type: Boolean, default: false })
+  public allowClear: boolean
 
   @Prop({ type: Boolean, default: false })
   public tags: boolean
@@ -118,16 +129,26 @@ export default class CripSelect<T> extends Vue {
   }
 
   public onEscape(e: Event) {
-    this.criteria = this.checkpoint.plainText()
+    if (this.checkpoint) {
+      this.criteria = this.checkpoint.plainText()
 
-    // TODO: Assume this is not correct behavior
-    // setup last checkpoint as current one
-    /*if (this.dropdownOptions.indexOf(this.checkpoint) === -1) {
-      this.options.push(this.checkpoint)
-    }*/
+      // TODO: Assume this is not correct behavior
+      // setup last checkpoint as current one
+      /*if (this.dropdownOptions.indexOf(this.checkpoint) === -1) {
+        this.options.push(this.checkpoint)
+      }*/
 
-    this.current = this.dropdownOptions.indexOf(this.checkpoint)
+      this.current = this.dropdownOptions.indexOf(this.checkpoint)
+      this.isOpen = false
+
+      return
+    }
+
+    this.criteria = ""
+    this.current = -1
     this.isOpen = false
+
+    return
   }
 
   public onEnter(e: Event) {
@@ -158,6 +179,13 @@ export default class CripSelect<T> extends Vue {
     this.createCheckpoint(option)
     this.criteria = option.plainText()
     this.$emit("input", option.value)
+  }
+
+  public deselectOption() {
+    this.isOpen = false
+    this.checkpoint = null
+    this.criteria = ""
+    this.$emit("input", null)
   }
 
   private detectOptionForSelect() {

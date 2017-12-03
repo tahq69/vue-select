@@ -11,11 +11,17 @@ describe("Select.vue", () => {
     const vm = getVm({})
     expect(true).toBe(true)
   })
+
+  it("should render with close btn", () => {
+    const vm = getVm({ allowClear: true })
+    expect(vm.$el.getElementsByClassName("c-close-btn")).not.toBeNull()
+  })
 })
 
 interface PropsData {
   options?: any[]
   text?: (o) => string
   count?: number
+  allowClear?: boolean
   tags?: boolean
 }

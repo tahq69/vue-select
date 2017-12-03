@@ -13,13 +13,18 @@
           />
         </div>
 
-        <!--<div class="form-group">
-          <CripSelect :options="options" v-model="selectedValue2" />
-        </div>-->
+        <div class="form-group">
+          <CripSelect
+              :options="options"
+              :text="textRender"
+              v-model="selectedValue2"
+              :allow-clear="true"
+          />
+        </div>
 
         <div>1) {{ selectedValue }}</div>
 
-        <!--<div>2) {{ selectedValue2 }}</div>-->
+        <div>2) {{ selectedValue2 }}</div>
 
       </form>
     </div>
