@@ -1,1 +1,3 @@
-export const Plugin: (Vue, options?: any) => void
+import Vue from "vue"
+
+export const Plugin: (vue: typeof Vue, options?: any) => void
