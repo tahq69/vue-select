@@ -1,3 +1,7 @@
 import Vue from "vue"
 
-export const Plugin: (vue: typeof Vue, options?: any) => void
+export interface Options {
+  componentPrefix: string
+}
+
+export const Plugin: (vue: typeof Vue, options?: Options) => void

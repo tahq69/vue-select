@@ -1,10 +1,7 @@
-import { highlight, stripHTML } from "./helpers"
-
-let seed = 0
-const now = Date.now()
+import { highlight, stripHTML, uuidv4 } from "./../help"
 
 function uuid() {
-  return `key_${now}_${++seed}`
+  return `key_${uuidv4}`
 }
 
 interface IValue {

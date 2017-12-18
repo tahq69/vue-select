@@ -9,7 +9,21 @@ export default Vue.extend({
 
   components: { ExampleSection, CodeSample },
 
-  methods: {},
+  data() {
+    return {
+      options: [
+        { text: "one", value: { num: 1, flag: "lv" } },
+        { text: "two", value: { num: 2, flag: "gb" } },
+      ],
+      selectedValue: null,
+    }
+  },
+
+  methods: {
+    textRender(o: { text: string; value: { num: number; flag: string } }) {
+      return `${o.value.num} <i>${o.value.flag}</i> ${o.text}`
+    },
+  },
 })
 </script>
 
@@ -18,6 +32,13 @@ export default Vue.extend({
     <div class="row">
       <div class="col-xs-12">
         <p>To start using component you need simply register it.</p>
+        <div>
+          <crip-select
+            :options="options"
+            :text="textRender"
+            v-model="selectedValue"
+          />
+        </div>
       </div>
     </div>
 
@@ -27,8 +48,18 @@ export default Vue.extend({
       Vue.use(CripVueSelect)
 
       Vue.extend({
-        methods: {},
-        },
+        template: `
+          &lt;crip-select
+            :options="options"
+            :text="textRender"
+            v-model="selectedValue"
+          /&gt;
+        `,
+        data() {
+          return {
+
+          }
+        }
       })
     </code-sample>
   </example-section>

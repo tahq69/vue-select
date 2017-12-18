@@ -1,5 +1,7 @@
 import Vue from "vue"
 
+import "./assets/styles.scss"
+
 import App from "./components/Docs.vue"
 
 import CripVueSelect from "@/main"

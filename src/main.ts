@@ -1,14 +1,20 @@
-import _vue from "vue"
-import Select from "./select/Select.vue"
+import Vue from "vue"
 
-export interface IOptions {
-  componentPrefix: string
+import "./assets/styles.scss"
+
+import { Options } from "./contracts"
+import install from "./install"
+
+export default class CripVueLoading {
+  public static install: (vue: typeof Vue, options?: Options) => void
+  public static version: string
+
+  private a: string
+
+  public constructor() {
+    this.a = "defined value of a"
+  }
 }
 
-// tslint:disable-next-line:variable-name
-export default function(Vue: typeof _vue, options?: IOptions) {
-  const defaults = { componentPrefix: "Crip" }
-  const parameters = Object.assign(defaults, options)
-
-  Vue.component(`${parameters.componentPrefix}Select`, Select)
-}
+CripVueLoading.install = install
+CripVueLoading.version = "__VERSION__"
