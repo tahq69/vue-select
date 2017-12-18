@@ -59,7 +59,7 @@ export default class CripSelect<T> extends Vue {
   @Prop({ type: Array, default: () => [] })
   public options: T[]
 
-  @Prop({ type: Function, default: value => value })
+  @Prop({ type: Function, default: (value: T) => value })
   public text: (value: T) => string
 
   @Prop({ type: Number, default: 12 })
@@ -68,7 +68,7 @@ export default class CripSelect<T> extends Vue {
   @Prop({ type: Boolean, default: false })
   public allowClear: boolean
 
-  @Prop({type: Function})
+  @Prop({ type: Function })
   public async: (criteria: string) => Promise<T[]>
 
   @Prop({ type: Boolean, default: false })
@@ -82,7 +82,7 @@ export default class CripSelect<T> extends Vue {
 
   private current: number = -1
 
-  private checkpoint: CripOption<T> = null
+  private checkpoint: CripOption<T> | null = null
 
   public get filteredOptions() {
     if (this.criteria.trim() === "") return this.cripOptions
