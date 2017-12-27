@@ -11,7 +11,8 @@ export default function(vue: typeof Vue) {
       <li>
         <a @click.prevent="select"
            v-html="text"
-           href="#"></a>
+           href="#"
+           class="crip-option"></a>
       </li>
     `,
 

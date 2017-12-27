@@ -19,6 +19,8 @@ module.exports = {
     path: resolve("./dist"),
     publicPath: "/dist/",
     filename: "[name].js",
+    devtoolModuleFilenameTemplate: '[absolute-resource-path]',
+    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
   },
   resolve: {
     extensions: [".ts", ".js", ".vue", ".json"],
