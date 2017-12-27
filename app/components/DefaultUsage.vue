@@ -4,6 +4,8 @@ import Vue from "vue"
 import CodeSample from "./CodeSample.vue"
 import ExampleSection from "./ExampleSection.vue"
 
+import CripSelect from "@/main"
+
 export default Vue.extend({
   name: "DefaultUsage",
 
@@ -11,18 +13,12 @@ export default Vue.extend({
 
   data() {
     return {
-      options: [
-        { text: "one", value: { num: 1, flag: "lv" } },
-        { text: "two", value: { num: 2, flag: "gb" } },
-      ],
+      settings: new CripSelect([
+        { key: "1", text: "one", value: { num: 1, flag: "lv" } },
+        { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+      ]),
       selectedValue: null,
     }
-  },
-
-  methods: {
-    textRender(o: { text: string; value: { num: number; flag: string } }) {
-      return `${o.value.num} <i>${o.value.flag}</i> ${o.text}`
-    },
   },
 })
 </script>
@@ -33,12 +29,10 @@ export default Vue.extend({
       <div class="col-xs-12">
         <p>To start using component you need simply register it.</p>
         <div>
-          <crip-select
-            :options="options"
-            :text="textRender"
-            v-model="selectedValue"
-          />
+          <crip-select :settings="settings"
+                       v-model="selectedValue" />
         </div>
+        <code v-text="JSON.stringify(selectedValue, null, 4)"></code>
       </div>
     </div>
 
@@ -49,11 +43,9 @@ export default Vue.extend({
 
       Vue.extend({
         template: `
-          &lt;crip-select
-            :options="options"
-            :text="textRender"
-            v-model="selectedValue"
-          /&gt;
+          &lt;crip-select :settings="options"
+                       :text="textRender"
+                       v-model="selectedValue" /&gt;
         `,
         data() {
           return {

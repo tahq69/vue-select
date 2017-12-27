@@ -1,6 +1,6 @@
 import Vue from "vue"
 
-import Select from "./components/Select"
+import Select from "./components/CripSelect"
 import { Options } from "./contracts"
 
 let installed = false

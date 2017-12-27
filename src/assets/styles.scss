@@ -1,3 +1,25 @@
 .crip-vue-select {
   background-color: gray;
 }
+
+.crip-select {
+  .crip-options {
+    width: 100%;
+  }
+
+  .crip-options {
+    margin-top: 0px;
+  }
+
+  &.open {
+    .crip-input {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+
+    .crip-options {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+    }
+  }
+}

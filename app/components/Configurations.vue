@@ -19,7 +19,10 @@ export default Vue.extend({
       <div class="col-xs-12">
         <p>Some configurations.</p>
 
-        <button class="btn btn-default" @click="alert">Alert</button>
+        <button class="btn btn-default"
+                @click="alert">
+          Alert
+        </button>
       </div>
     </div>
 
