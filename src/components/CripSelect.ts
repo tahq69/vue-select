@@ -119,6 +119,9 @@ export default function(vue: typeof Vue) {
         this.selected.push(option)
         this.$emit("input", this.selected.map(opt => opt.value))
         this.criteria = ""
+
+        // Hide dropdown if we select last element in dropdown.
+        if (this.dropdownOptions.length === 0) this.isOpen = false
       },
 
       onInput(criteria: string) {
@@ -129,12 +132,12 @@ export default function(vue: typeof Vue) {
       },
 
       onSelect(option: CripSelectOption): void {
-        this.isOpen = false
         if (this.tags > 0) {
           this.addTag(option)
           return
         }
 
+        this.isOpen = false
         this.createCheckpoint(option)
         this.criteria = option.text
         this.current = this.dropdownOptions.indexOf(option)
@@ -146,6 +149,7 @@ export default function(vue: typeof Vue) {
         this.checkpoint = null
         this.criteria = ""
         this.$emit("input", null)
+        this.selected = []
       },
 
       onFocus(e: Event): void {
