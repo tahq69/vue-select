@@ -13,10 +13,10 @@ export default Vue.extend({
 
   data() {
     return {
-      settings: new CripSelect([
+      options: [
         { key: "1", text: "one", value: { num: 1, flag: "lv" } },
         { key: "2", text: "two", value: { num: 2, flag: "gb" } },
-      ]),
+      ],
       selectedValue: null,
     }
   },
@@ -28,11 +28,14 @@ export default Vue.extend({
     <div class="row">
       <div class="col-xs-12">
         <p>To start using component you need simply register it.</p>
-        <div>
-          <crip-select :settings="settings"
+        <div class="form-group">
+          <crip-select :options="options"
                        v-model="selectedValue" />
         </div>
-        <code v-text="JSON.stringify(selectedValue, null, 4)"></code>
+        <div class="form-group">
+          <label class="control-label">Selected value:</label>
+          <code v-text="JSON.stringify(selectedValue, null, 4)"></code>
+        </div>
       </div>
     </div>
 
