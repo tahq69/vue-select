@@ -28,36 +28,23 @@ module.exports = {
     extensions: [".ts", ".js", ".json"],
     alias: {
       "@": resolve("src"),
+      "&": resolve("test"),
     },
   },
   module: {
     rules: [
       {
-        enforce: "pre",
-        test: /\.ts$/,
-        loader: "tslint-loader",
-        exclude: /node_modules|vue\/src|vendor\/*/,
-        options: {
-          configFile: "tslint.json",
-        },
-      },
-      {
         test: /\.ts$/,
         exclude: /node_modules|vue\/src|vendor\/*/,
         loader: "ts-loader",
-        include: resolve("./src"),
+        include: [resolve("src"), resolve("test")],
       },
       {
         test: /\.scss$/,
         use: [{ loader: "style-loader" }, { loader: "css-loader" }, { loader: "sass-loader" }],
       },
-      {
-        test: /\.ts$/,
-        loader: "string-replace-loader",
-        query: { search: "__VERSION__", replace: version },
-      },
     ],
   },
   externals: [nodeExternals()],
-  devtool: 'inline-cheap-module-source-map'
+  devtool: "inline-cheap-module-source-map",
 }

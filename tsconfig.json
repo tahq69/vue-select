@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "#/*": ["app/*"]
+      "#/*": ["app/*"],
+      "&/*": ["test/*"]
     },
     "sourceMap": true,
     "lib": ["dom", "es5", "es2015"],

@@ -45,8 +45,7 @@ export default function(vue: typeof Vue) {
         <CripOptions :options="dropdownOptions"
                      :criteria="criteria"
                      :current="current"
-                     @select="onSelect"
-                     class="dropdown-menu crip-options" />
+                     @select="onSelect" />
       </div>
     `,
 

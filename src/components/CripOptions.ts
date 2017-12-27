@@ -10,7 +10,7 @@ export default function(vue: typeof Vue) {
     components: { CripOption: CripOption(vue) },
 
     template: `
-      <ul>
+      <ul class="dropdown-menu crip-options">
         <CripOption v-for="option in options"
                     :key="option.key"
                     :class="{ 'active': isActive(option) }"
@@ -31,8 +31,8 @@ export default function(vue: typeof Vue) {
     },
 
     computed: {
-      currentValue(): CripSelectOption {
-        return this.options[this.current] || { key: 0 }
+      currentValue(): CripSelectOption | undefined {
+        return this.options[this.current] || undefined
       },
     },
 
@@ -42,6 +42,7 @@ export default function(vue: typeof Vue) {
       },
 
       isActive(option: CripSelectOption) {
+        if (!this.currentValue) return false
         return this.currentValue.key === option.key
       },
     },
