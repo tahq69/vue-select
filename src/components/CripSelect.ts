@@ -1,6 +1,7 @@
 import Vue, { VNode } from "vue"
 import { CripSelectOption } from "./../../types/plugin"
 
+import { uuidv4 } from "../help"
 import CripOptions from "./CripOptions"
 
 interface Data {
@@ -8,6 +9,7 @@ interface Data {
   criteria: string
   current: number
   checkpoint: null | CripSelectOption
+  selected: CripSelectOption[]
 }
 
 export default function(vue: typeof Vue) {
@@ -19,7 +21,7 @@ export default function(vue: typeof Vue) {
     template: `
       <div :class="{'open': isOpen}"
            class="crip-select dropdown">
-        <div :class="{'input-group': (tags && selected.length) || clear}">
+        <div :class="{'input-group': (tags > 0 && selected.length) || clear}">
           <input :value="criteria"
                  @input="onInput($event.target.value)"
                  @focus="onFocus"
@@ -68,18 +70,18 @@ export default function(vue: typeof Vue) {
       },
       settings: { type: Object, default: () => ({}) },
       count: { type: Number, default: 12 },
-      tags: { type: Boolean, default: false },
+      tags: { type: Number, default: 0 },
       clear: { type: Boolean, default: false },
     },
 
     computed: {
       dropdownOptions(): CripSelectOption[] {
         if (this.options && this.options.length > 0) {
-          return this.options
+          return this.filter(this.options)
         }
 
         if (this.settings && this.settings.options.length > 0) {
-          return this.settings.options
+          return this.filter(this.settings.options)
         }
 
         return []
@@ -92,13 +94,14 @@ export default function(vue: typeof Vue) {
         criteria: "",
         current: -1,
         checkpoint: null,
+        selected: [],
       }
     },
 
     methods: {
       detectOptionForSelect(): void {
-        if (this.current === -1 && this.tags === true) {
-          this.addTag()
+        if (this.tags > 0 && this.current === -1) {
+          this.addTag({ value: this.criteria, text: this.criteria, key: uuidv4() })
           return
         }
 
@@ -112,8 +115,10 @@ export default function(vue: typeof Vue) {
         this.checkpoint = option
       },
 
-      addTag() {
-        // TODO: add tagging option for select
+      addTag(option: CripSelectOption) {
+        this.selected.push(option)
+        this.$emit("input", this.selected.map(opt => opt.value))
+        this.criteria = ""
       },
 
       onInput(criteria: string) {
@@ -125,6 +130,11 @@ export default function(vue: typeof Vue) {
 
       onSelect(option: CripSelectOption): void {
         this.isOpen = false
+        if (this.tags > 0) {
+          this.addTag(option)
+          return
+        }
+
         this.createCheckpoint(option)
         this.criteria = option.text
         this.current = this.dropdownOptions.indexOf(option)
@@ -194,6 +204,18 @@ export default function(vue: typeof Vue) {
         if (this.current > 0) {
           this.current--
         }
+      },
+
+      filter(options: CripSelectOption[]): CripSelectOption[] {
+        if (this.tags < 1 && this.criteria.length < 3) return options
+
+        return options.filter(option => {
+          // Ignore already selected options for tagging.
+          if (this.tags > 0 && this.selected.filter(v => v.key === option.key).length > 0)
+            return false
+
+          return option.text.indexOf(this.criteria) > -1
+        })
       },
     },
   })

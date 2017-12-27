@@ -26,6 +26,11 @@ export default Vue.extend({
                 </router-link>
               </li>
               <li class="list-group-item">
+                <router-link :to="{name: 'tags'}">
+                  Tags usage
+                </router-link>
+              </li>
+              <li class="list-group-item">
                 <router-link :to="{name: 'configurations'}">
                   Configurations
                 </router-link>
