@@ -102,6 +102,9 @@ export default function(vue: typeof Vue) {
           return
         }
 
+        // Ignore selection if there is no element highlighted in options.
+        if (this.current === -1) return
+
         this.onSelect(this.dropdownOptions[this.current])
       },
 
