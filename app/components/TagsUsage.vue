@@ -18,7 +18,8 @@ export default Vue.extend({
   data() {
     return {
       options,
-      selectedValue: null,
+      selectedValue1: null,
+      selectedValue2: null,
     }
   },
 })
@@ -28,16 +29,30 @@ export default Vue.extend({
   <example-section title="Tags usage">
     <div class="row">
       <div class="col-xs-12">
-        <p>Tags property allows to select un-existing values.</p>
+        <p>Tags property with value 1 - allows to select un-existing value.</p>
         <div class="form-group">
           <crip-select :options="options"
                        :clear="true"
                        :tags="1"
-                       v-model="selectedValue" />
+                       v-model="selectedValue1" />
         </div>
         <div class="form-group">
           <label class="control-label">Selected value:</label>
-          <code v-text="JSON.stringify(selectedValue, null, 4)"></code>
+          <code v-text="JSON.stringify(selectedValue1, null, 4)"></code>
+        </div>
+
+        <p>
+          Tags property with value 2 or greater - allows to select many values and resulting
+          object always will be an array of selected values.
+        </p>
+        <div class="form-group">
+          <crip-select :options="options"
+                       :tags="2"
+                       v-model="selectedValue2" />
+        </div>
+        <div class="form-group">
+          <label class="control-label">Selected value:</label>
+          <code v-text="JSON.stringify(selectedValue2, null, 4)"></code>
         </div>
       </div>
     </div>
