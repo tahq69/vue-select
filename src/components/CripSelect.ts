@@ -12,6 +12,14 @@ interface Data {
   selected: CripSelectOption[]
 }
 
+function newOption(value: string): CripSelectOption {
+  return {
+    key: uuidv4(),
+    text: value,
+    value,
+  }
+}
+
 export default function(vue: typeof Vue) {
   return vue.extend({
     name: "CripSelect",
@@ -76,15 +84,29 @@ export default function(vue: typeof Vue) {
 
     computed: {
       dropdownOptions(): CripSelectOption[] {
+        const results = this.tags > 0 && this.criteria.length > 0 ? [newOption(this.criteria)] : []
+
         if (this.options && this.options.length > 0) {
-          return this.filter(this.options)
+          return this.filter(this.options, results)
         }
 
         if (this.settings && this.settings.options.length > 0) {
-          return this.filter(this.settings.options)
+          return this.filter(this.settings.options, results)
         }
 
-        return []
+        return results
+      },
+
+      isAnyFocused(): boolean {
+        return this.current > -1
+      },
+
+      canHaveManyTags(): boolean {
+        return this.tags > 1
+      },
+
+      canHaveOneTag(): boolean {
+        return this.tags === 1
       },
     },
 
@@ -100,13 +122,22 @@ export default function(vue: typeof Vue) {
 
     methods: {
       detectOptionForSelect(): void {
-        if (this.tags > 0 && this.current === -1) {
-          this.addTag({ value: this.criteria, text: this.criteria, key: uuidv4() })
+        if (this.canHaveManyTags && !this.isAnyFocused) {
+          this.addTag(newOption(this.criteria))
           return
         }
 
-        // Ignore selection if there is no element highlighted in options.
-        if (this.current === -1) return
+        if (!this.isAnyFocused && this.tags !== 1) {
+          // Ignore selection if there is no element highlighted in options.
+          return
+        }
+
+        if (!this.isAnyFocused && this.canHaveOneTag && this.criteria.length > 0) {
+          // If single tag is allowed, treat it as simple option, where value is
+          // criteria text.
+          this.onSelect(newOption(this.criteria))
+          return
+        }
 
         this.onSelect(this.dropdownOptions[this.current])
       },
@@ -126,13 +157,13 @@ export default function(vue: typeof Vue) {
 
       onInput(criteria: string) {
         this.isOpen = true
-        this.current = -1
+        this.current = 0
         this.criteria = criteria
         // TODO: if is async component we should call for new data for options list
       },
 
       onSelect(option: CripSelectOption): void {
-        if (this.tags > 0) {
+        if (this.canHaveManyTags) {
           this.addTag(option)
           return
         }
@@ -149,6 +180,8 @@ export default function(vue: typeof Vue) {
         this.checkpoint = null
         this.criteria = ""
         this.$emit("input", null)
+
+        // Clear all selected values if tags are enabled.
         this.selected = []
       },
 
@@ -157,9 +190,10 @@ export default function(vue: typeof Vue) {
       },
 
       onBlur(e: Event): void {
-        // Close dropdown only when click binding is already propongadated.
         setTimeout(() => {
+          // Close dropdown only when click binding is already propongadated.
           this.isOpen = false
+
           if (this.checkpoint !== null) {
             this.criteria = this.checkpoint.text
           }
@@ -190,8 +224,7 @@ export default function(vue: typeof Vue) {
 
       onEnter(e: Event): void {
         if (this.isOpen) {
-          // Avoid form submit if dropdown is open and selection in list is on
-          // some of the elements.
+          // Avoid form submit if dropdown is open.
           e.preventDefault()
         }
 
@@ -199,27 +232,42 @@ export default function(vue: typeof Vue) {
       },
 
       onDown(e: Event): void {
+        this.onFocus(e)
+
         if (this.current < this.dropdownOptions.length - 1) {
           this.current++
         }
       },
 
       onUp(e: Event): void {
+        this.onFocus(e)
+
         if (this.current > 0) {
           this.current--
         }
       },
 
-      filter(options: CripSelectOption[]): CripSelectOption[] {
+      filter(options: CripSelectOption[], systemOptions: CripSelectOption[]): CripSelectOption[] {
         if (this.tags < 1 && this.criteria.length < 3) return options
 
-        return options.filter(option => {
+        const results = options.filter(option => {
           // Ignore already selected options for tagging.
           if (this.tags > 0 && this.selected.filter(v => v.key === option.key).length > 0)
             return false
 
           return option.text.indexOf(this.criteria) > -1
         })
+
+        if (
+          systemOptions.length > 0 &&
+          results.filter(o => o.text === systemOptions[0].text).length === 0
+        ) {
+          // Unshift system option only if text does not occurs in defined
+          // options.
+          results.unshift(systemOptions[0])
+        }
+
+        return results
       },
     },
   })
