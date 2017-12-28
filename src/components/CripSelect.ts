@@ -1,16 +1,20 @@
 import Vue, { VNode } from "vue"
 import { CripSelectOption } from "./../../types/plugin"
 
+import debounce from "../debounce"
 import { uuidv4 } from "../help"
 import CripOptions from "./CripOptions"
 import CripTags from "./CripTags"
 
+type Options = CripSelectOption[]
+
 interface Data {
-  isOpen: boolean
+  asyncOptions: Options
+  checkpoint: null | CripSelectOption
   criteria: string
   current: number
-  checkpoint: null | CripSelectOption
-  selected: CripSelectOption[]
+  isOpen: boolean
+  selected: Options
 }
 
 function newOption(value: string): CripSelectOption {
@@ -80,26 +84,28 @@ export default function(vue: typeof Vue) {
           return true
         },
       },
-      settings: { type: Object, default: () => ({}) },
-      count: { type: Number, default: 12 },
-      tags: { type: Boolean, default: false },
-      multiple: { type: Boolean, default: false },
       clear: { type: Boolean, default: false },
+      count: { type: Number, default: 12 },
+      multiple: { type: Boolean, default: false },
+      settings: { type: Object, default: () => ({}) },
+      tags: { type: Boolean, default: false },
     },
 
     computed: {
-      dropdownOptions(): CripSelectOption[] {
-        const results = this.tags && this.criteria.length > 0 ? [newOption(this.criteria)] : []
+      dropdownOptions(): Options {
+        const results = this.multiple && this.criteria.length > 0 ? [newOption(this.criteria)] : []
 
         if (this.options && this.options.length > 0) {
-          return this.filter(this.options, results)
+          const options = this.filter(this.options, results)
+          return this.mergeWithAsync(options).slice(0, this.count)
         }
 
-        if (this.settings && this.settings.options.length > 0) {
-          return this.filter(this.settings.options, results)
+        if (this.settings && this.settings.options && this.settings.options.length > 0) {
+          const options = this.filter(this.settings.options, results)
+          return this.mergeWithAsync(options).slice(0, this.count)
         }
 
-        return results
+        return this.mergeWithAsync(results).slice(0, this.count)
       },
 
       isAnyFocused(): boolean {
@@ -122,6 +128,7 @@ export default function(vue: typeof Vue) {
         current: -1,
         checkpoint: null,
         selected: [],
+        asyncOptions: [],
       }
     },
 
@@ -155,7 +162,7 @@ export default function(vue: typeof Vue) {
         this.checkpoint = option
       },
 
-      addTag(option: CripSelectOption) {
+      addTag(option: CripSelectOption): void {
         this.selected.push(option)
         this.$emit("input", this.selected.map(opt => opt.value))
         this.criteria = ""
@@ -164,7 +171,7 @@ export default function(vue: typeof Vue) {
         if (this.dropdownOptions.length === 0) this.isOpen = false
       },
 
-      onTagRemove(option: CripSelectOption) {
+      onTagRemove(option: CripSelectOption): void {
         this.selected.splice(this.selected.indexOf(option), 1)
         this.$emit("input", this.selected.map(opt => opt.value))
       },
@@ -173,7 +180,8 @@ export default function(vue: typeof Vue) {
         this.isOpen = true
         this.current = 0
         this.criteria = criteria
-        // TODO: if is async component we should call for new data for options list
+
+        this.debounceInput()
       },
 
       onSelect(option: CripSelectOption): void {
@@ -263,7 +271,7 @@ export default function(vue: typeof Vue) {
         }
       },
 
-      filter(options: CripSelectOption[], systemOptions: CripSelectOption[]): CripSelectOption[] {
+      filter(options: Options, systemOptions: Options): Options {
         if (!this.multiple && this.criteria.length < 3) return options
 
         const results = options.filter(option => {
@@ -285,6 +293,30 @@ export default function(vue: typeof Vue) {
 
         return results
       },
+
+      mergeWithAsync(options: Options): Options {
+        return [...options, ...this.asyncOptions]
+      },
+
+      asyncUpdate() {
+        if (this.settings && this.settings.async) {
+          this.settings.update(this.criteria)
+        }
+      },
+
+      debounceInput: debounce(function(this: { asyncUpdate: () => void }, e) {
+        this.asyncUpdate()
+      }, 300),
+    },
+
+    mounted() {
+      if (this.settings) {
+        this.settings.init((option: CripSelectOption) => {
+          this.onSelect(option)
+        })
+      }
+
+      this.asyncUpdate()
     },
   })
 }

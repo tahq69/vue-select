@@ -37,6 +37,7 @@
   "devDependencies": {
     "@types/expect": "^1.20.2",
     "@types/mocha": "^2.2.45",
+    "axios": "^0.17.1",
     "bootstrap-sass": "^3.3.7",
     "cross-env": "^3.2.4",
     "css-loader": "^0.25.0",

@@ -25,11 +25,19 @@ export default Vue.extend({
                   Default usage
                 </router-link>
               </li>
+
               <li class="list-group-item">
                 <router-link :to="{name: 'tags'}">
                   Tags usage
                 </router-link>
               </li>
+
+              <li class="list-group-item">
+                <router-link :to="{name: 'async'}">
+                  Async options usage
+                </router-link>
+              </li>
+
               <li class="list-group-item">
                 <router-link :to="{name: 'configurations'}">
                   Configurations

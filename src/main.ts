@@ -1,25 +1,32 @@
 import Vue from "vue"
 
 import "./assets/styles.scss"
-
-import { CripSelectConstructorSettings, CripSelectOption, CripSelectOptions } from "../types/plugin"
-
 import install from "./install"
 
-type Settings = CripSelectConstructorSettings | CripSelectOption[]
-type DefaultOption = CripSelectOption | Promise<CripSelectOption>
-type UpdateCallback = (criteria: string) => CripSelectOption[]
+import {
+  CripSelectOption,
+  CripSelectOptions,
+  Install,
+  OnInit,
+  OnUpdate,
+  Options,
+  Settings,
+} from "../types/plugin"
+
 
 export default class CripVueSelect {
-  public static install: (vue: typeof Vue, options?: CripSelectOptions) => void
+  public static install: Install
   public static version: string
-  public async: boolean
 
-  private options: CripSelectOption[] | undefined
-  private onInitMethod: DefaultOption | undefined
-  private onUpdateMethod: UpdateCallback | undefined
+  public async: boolean
+  public loading: boolean[]
+
+  private options: Options
+  private onInitMethod: OnInit | undefined
+  private onUpdateMethod: OnUpdate | undefined
 
   constructor(settings: Settings) {
+    this.loading = []
     if (Array.isArray(settings)) {
       this.async = false
       this.options = settings
@@ -27,16 +34,39 @@ export default class CripVueSelect {
       this.async = settings.async || false
       this.onInitMethod = settings.onInit
       this.onUpdateMethod = settings.onUpdate
-      this.options = settings.options
+      this.options = settings.options || []
     }
   }
 
-  public onUpdate(callback: UpdateCallback): void {
+  public onUpdate(callback: OnUpdate): void {
     this.onUpdateMethod = callback
   }
 
-  public onInit(selected: DefaultOption): void {
-    this.onInitMethod = selected
+  public onInit(callback: OnInit): void {
+    this.onInitMethod = callback
+  }
+
+  public init(select: (opt: CripSelectOption) => void): void {
+    if (this.onInitMethod) {
+      this.loading.push(true)
+
+      this.onInitMethod(option => {
+        this.loading.splice(0, 1)
+        this.options.push(option)
+        select(option)
+      })
+    }
+  }
+
+  public update(criteria: string): void {
+    if (this.onUpdateMethod) {
+      this.loading.push(true)
+
+      this.onUpdateMethod(criteria, options => {
+        this.loading.splice(0, 1)
+        this.options = options
+      })
+    }
   }
 }
 
