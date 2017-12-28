@@ -3,6 +3,7 @@ import { CripSelectOption } from "./../../types/plugin"
 
 import { uuidv4 } from "../help"
 import CripOptions from "./CripOptions"
+import CripTags from "./CripTags"
 
 interface Data {
   isOpen: boolean
@@ -24,12 +25,15 @@ export default function(vue: typeof Vue) {
   return vue.extend({
     name: "CripSelect",
 
-    components: { CripOptions: CripOptions(vue) },
+    components: { CripOptions: CripOptions(vue), CripTags: CripTags(vue) },
 
     template: `
       <div :class="{'open': isOpen}"
            class="crip-select dropdown">
-        <div :class="{'input-group': (tags > 0 && selected.length) || clear}">
+        <div :class="{'input-group': (multiple && selected.length) || clear}">
+          <CripTags :tags="selected"
+                    @remove="onTagRemove"/>
+
           <input :value="criteria"
                  @input="onInput($event.target.value)"
                  @focus="onFocus"
@@ -78,13 +82,14 @@ export default function(vue: typeof Vue) {
       },
       settings: { type: Object, default: () => ({}) },
       count: { type: Number, default: 12 },
-      tags: { type: Number, default: 0 },
+      tags: { type: Boolean, default: false },
+      multiple: { type: Boolean, default: false },
       clear: { type: Boolean, default: false },
     },
 
     computed: {
       dropdownOptions(): CripSelectOption[] {
-        const results = this.tags > 0 && this.criteria.length > 0 ? [newOption(this.criteria)] : []
+        const results = this.tags && this.criteria.length > 0 ? [newOption(this.criteria)] : []
 
         if (this.options && this.options.length > 0) {
           return this.filter(this.options, results)
@@ -102,11 +107,11 @@ export default function(vue: typeof Vue) {
       },
 
       canHaveManyTags(): boolean {
-        return this.tags > 1
+        return this.tags && this.multiple
       },
 
       canHaveOneTag(): boolean {
-        return this.tags === 1
+        return this.tags && !this.multiple
       },
     },
 
@@ -127,8 +132,9 @@ export default function(vue: typeof Vue) {
           return
         }
 
-        if (!this.isAnyFocused && this.tags !== 1) {
-          // Ignore selection if there is no element highlighted in options.
+        if (!this.isAnyFocused && !this.tags) {
+          // Ignore selection if there is no element highlighted in options when
+          // tags is disabled.
           return
         }
 
@@ -139,7 +145,10 @@ export default function(vue: typeof Vue) {
           return
         }
 
-        this.onSelect(this.dropdownOptions[this.current])
+        const option = this.dropdownOptions[this.current]
+
+        // Select only if we have a value.
+        if (option) this.onSelect(option)
       },
 
       createCheckpoint(option: CripSelectOption): void {
@@ -155,6 +164,11 @@ export default function(vue: typeof Vue) {
         if (this.dropdownOptions.length === 0) this.isOpen = false
       },
 
+      onTagRemove(option: CripSelectOption) {
+        this.selected.splice(this.selected.indexOf(option), 1)
+        this.$emit("input", this.selected.map(opt => opt.value))
+      },
+
       onInput(criteria: string) {
         this.isOpen = true
         this.current = 0
@@ -163,7 +177,7 @@ export default function(vue: typeof Vue) {
       },
 
       onSelect(option: CripSelectOption): void {
-        if (this.canHaveManyTags) {
+        if (this.multiple) {
           this.addTag(option)
           return
         }
@@ -196,6 +210,8 @@ export default function(vue: typeof Vue) {
 
           if (this.checkpoint !== null) {
             this.criteria = this.checkpoint.text
+          } else if (!this.tags) {
+            this.criteria = ""
           }
         }, 100)
       },
@@ -248,11 +264,11 @@ export default function(vue: typeof Vue) {
       },
 
       filter(options: CripSelectOption[], systemOptions: CripSelectOption[]): CripSelectOption[] {
-        if (this.tags < 1 && this.criteria.length < 3) return options
+        if (!this.multiple && this.criteria.length < 3) return options
 
         const results = options.filter(option => {
           // Ignore already selected options for tagging.
-          if (this.tags > 0 && this.selected.filter(v => v.key === option.key).length > 0)
+          if (this.multiple && this.selected.filter(v => v.key === option.key).length > 0)
             return false
 
           return option.text.indexOf(this.criteria) > -1
