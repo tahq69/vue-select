@@ -1,6 +1,6 @@
 import Vue from "vue"
 
-import Select from "./components/CripSelect"
+import CripSelect from "./components/CripSelect.vue"
 import { Options } from "./contracts"
 
 let installed = false
@@ -17,7 +17,6 @@ export default function install(vue: typeof Vue, options?: Options): void {
   }
 
   const parameters = Object.assign(defaults, options)
-  const component = Select(vue)
 
-  vue.component(`${parameters.componentPrefix}Select`, component)
+  vue.component(`${parameters.componentPrefix}Select`, CripSelect)
 }

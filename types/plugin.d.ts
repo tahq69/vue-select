@@ -25,12 +25,12 @@ export interface CripSelectOption {
   value: any
 }
 
-export interface Plugin {
-  install: Install
-  version: string
-  async: boolean
+export declare class Plugin {
+  constructor(settings: Settings)
+  static install: Install
+  static version: string
 
-  new (settings: Settings): Plugin
+  async: boolean
   onUpdate(callback: OnUpdate): void
   onInit(callback: OnInit): void
 }

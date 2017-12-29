@@ -2,13 +2,13 @@ import expect from "expect"
 import Vue from "vue"
 import { mount } from "vue-test-utils"
 
-import CripOption from "@/components/CripOption"
+import CripOption from "@/components/CripOption.vue"
 
 const option = { key: "1", text: "one", value: 1 }
 
 describe("CripOption", () => {
   it("Mounts without errors", (done) => {
-    const wrapper = mount(CripOption(Vue), {
+    const wrapper = mount(CripOption, {
       propsData: { option, criteria: "" },
     })
 
@@ -16,7 +16,7 @@ describe("CripOption", () => {
   })
 
   it("Emits select event when option is clicked", (done) => {
-    const wrapper = mount(CripOption(Vue), {
+    const wrapper = mount(CripOption, {
       propsData: { option, criteria: "" },
     })
 
@@ -31,7 +31,7 @@ describe("CripOption", () => {
   })
 
   it("Shows highlighted text when criteria matches text value", (done) => {
-    const wrapper = mount(CripOption(Vue), {
+    const wrapper = mount(CripOption, {
       propsData: { option, criteria: "on" },
     })
 

@@ -47,6 +47,18 @@ module.exports = {
         exclude: /node_modules|vue\/src|vendor\/*/,
         loader: "ts-loader",
         include: resolve("./src"),
+        options: { appendTsSuffixTo: [/\.vue$/] },
+      },
+      {
+        test: /\.vue$/,
+        loader: "vue-loader",
+        options: {
+          loaders: {
+            scss: "vue-style-loader!css-loader!sass-loader",
+            sass: "vue-style-loader!css-loader!sass-loader?indentedSyntax",
+            esModule: true,
+          },
+        },
       },
       {
         test: /\.scss$/,
@@ -56,6 +68,10 @@ module.exports = {
         test: /\.ts$/,
         loader: "string-replace-loader",
         query: { search: "__VERSION__", replace: version },
+      },
+      {
+        test: /\.html$/,
+        loader: "vue-template-loader",
       },
     ],
   },
@@ -85,6 +101,10 @@ module.exports = {
 }
 
 if (process.env.NODE_ENV === "production") {
+  module.exports.externals = {
+    vue: "Vue",
+  }
+
   module.exports.devtool = "#source-map"
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([

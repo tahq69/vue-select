@@ -2,7 +2,7 @@ import expect from "expect"
 import Vue from "vue"
 import { mount, VueClass, Wrapper } from "vue-test-utils"
 
-import CripOptions from "@/components/CripOptions"
+import CripOptions from "@/components/CripOptions.vue"
 
 const option1 = { key: "1", text: "one", value: 1 }
 const option2 = { key: "2", text: "two", value: 2 }
@@ -10,13 +10,11 @@ const propsData = { options: [option1, option2], criteria: "", current: -1 }
 
 describe("CripOptions", () => {
   it("Wraps without errors", () => {
-    const component = CripOptions(Vue)
-    const wrapper = mount(component, { propsData })
+    const wrapper = mount(CripOptions, { propsData })
   })
 
   it("Contains passed properties", (done) => {
-    const component = CripOptions(Vue)
-    const wrapper = mount(component, { propsData })
+    const wrapper = mount(CripOptions, { propsData })
 
     // expect(wrapper.vm.options).toEqual([option1, option2])
     // expect(wrapper.vm.criteria).toEqual("")
@@ -26,8 +24,7 @@ describe("CripOptions", () => {
   })
 
   it("Should have empty current value if current index is -1", (done) => {
-    const component = CripOptions(Vue)
-    const wrapper = mount(component, { propsData })
+    const wrapper = mount(CripOptions, { propsData })
 
     // expect(wrapper.vm.currentValue).toEqual(undefined)
 
