@@ -1,6 +1,6 @@
 {
   "name": "crip-vue-select",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Vue.js project to add customization around select input.",
   "main": "lib/crip-vue-select.js",
   "typings": "types/index.d.ts",
