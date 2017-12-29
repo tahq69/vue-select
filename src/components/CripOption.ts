@@ -1,36 +1,35 @@
-import Vue, { VNode } from "vue"
-import { CripSelectOption } from "../../types/plugin"
+<script lang="ts">
+import Vue from "vue"
 
-import { highlight } from "../help"
+import { highlight } from "./../help"
 
-export default function(vue: typeof Vue) {
-  return vue.extend({
-    name: "CripOption",
+export default Vue.extend({
+  name: "CripOption",
 
-    template: `
-      <li>
-        <a @click.prevent="select"
-           v-html="text"
-           href="#"
-           class="crip-option"></a>
-      </li>
-    `,
+  props: {
+    criteria: { type: String, required: true },
+    option: { type: Object, required: true },
+  },
 
-    props: {
-      option: { type: Object, required: true },
-      criteria: { type: String, required: true },
+  computed: {
+    text(): string {
+      return highlight(this.option.text, this.criteria)
     },
+  },
 
-    computed: {
-      text(): string {
-        return highlight(this.option.text, this.criteria)
-      },
+  methods: {
+    select() {
+      this.$emit("select", this.option)
     },
+  },
+})
+</script>
 
-    methods: {
-      select() {
-        this.$emit("select", this.option)
-      },
-    },
-  })
-}
+<template>
+  <li>
+    <a @click.prevent="select"
+       v-html="text"
+       href="#"
+       class="crip-option"></a>
+  </li>
+</template>

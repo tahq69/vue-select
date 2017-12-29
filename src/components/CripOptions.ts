@@ -1,50 +1,52 @@
-import Vue, { VNode } from "vue"
+<script lang="ts">
+import Vue from "vue"
 import { CripSelectOption } from "../../types/plugin"
 
-import CripOption from "./CripOption"
+import CripOption from "./CripOption.vue"
 
-export default function(vue: typeof Vue) {
-  return vue.extend({
-    name: "CripOptions",
+export default Vue.extend({
+  name: "CripOptions",
 
-    components: { CripOption: CripOption(vue) },
+  components: { CripOption },
 
-    template: `
-      <ul class="dropdown-menu crip-options">
-        <CripOption v-for="option in options"
-                    :key="option.key"
-                    :class="{ 'active': isActive(option) }"
-                    :option="option"
-                    :criteria="criteria"
-                    @select="select" />
+  props: {
+    options: { type: Array, required: true },
+    criteria: { type: String, required: true },
+    current: { type: Number, required: true },
+  },
 
-        <li v-if="options.length === 0" class="disabled">
-          <a @click.prevent="() => null" href="#">No data</a>
-        </li>
-      </ul>
-    `,
+  computed: {
+    currentValue(): CripSelectOption | undefined {
+      return this.options[this.current] || undefined
+    },
+  },
 
-    props: {
-      options: { type: Array, required: true },
-      criteria: { type: String, required: true },
-      current: { type: Number, required: true },
+  methods: {
+    select(option: CripSelectOption) {
+      this.$emit("select", option)
     },
 
-    computed: {
-      currentValue(): CripSelectOption | undefined {
-        return this.options[this.current] || undefined
-      },
+    isActive(option: CripSelectOption) {
+      if (!this.currentValue) return false
+      return this.currentValue.key === option.key
     },
+  },
+})
+</script>
 
-    methods: {
-      select(option: CripSelectOption) {
-        this.$emit("select", option)
-      },
+<template>
+  <ul class="dropdown-menu crip-options">
+    <CripOption v-for="option in options"
+                :key="option.key"
+                :class="{ 'active': isActive(option) }"
+                :option="option"
+                :criteria="criteria"
+                @select="select" />
 
-      isActive(option: CripSelectOption) {
-        if (!this.currentValue) return false
-        return this.currentValue.key === option.key
-      },
-    },
-  })
-}
+    <li v-if="options.length === 0"
+        class="disabled">
+      <a @click.prevent="() => null"
+         href="#">No data</a>
+    </li>
+  </ul>
+</template>
