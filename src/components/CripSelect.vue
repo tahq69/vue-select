@@ -55,7 +55,7 @@ export default Vue.extend({
 
   computed: {
     dropdownOptions(): Options {
-      const results = this.multiple && this.criteria.length > 0 ? [newOption(this.criteria)] : []
+      const results = this.tags && this.criteria.length > 0 ? [newOption(this.criteria)] : []
 
       if (this.options && this.options.length > 0) {
         const options = this.filter(this.options, results)
@@ -73,14 +73,6 @@ export default Vue.extend({
     isAnyFocused(): boolean {
       return this.current > -1
     },
-
-    canHaveManyTags(): boolean {
-      return this.tags && this.multiple
-    },
-
-    canHaveOneTag(): boolean {
-      return this.tags && !this.multiple
-    },
   },
 
   data(): Data {
@@ -96,7 +88,7 @@ export default Vue.extend({
 
   methods: {
     detectOptionForSelect(): void {
-      if (this.canHaveManyTags && !this.isAnyFocused) {
+      if (this.tags && !this.isAnyFocused) {
         this.addTag(newOption(this.criteria))
         return
       }
@@ -107,7 +99,7 @@ export default Vue.extend({
         return
       }
 
-      if (!this.isAnyFocused && this.canHaveOneTag && this.criteria.length > 0) {
+      if (!this.isAnyFocused && this.tags && !this.multiple && this.criteria.length > 0) {
         // If single tag is allowed, treat it as simple option, where value is
         // criteria text.
         this.onSelect(newOption(this.criteria))
