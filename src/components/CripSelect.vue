@@ -8,7 +8,6 @@ import CripOptions from "./CripOptions.vue"
 import CripTags from "./CripTags.vue"
 
 interface Data {
-  asyncOptions: Options
   checkpoint: null | CripSelectOption
   criteria: string
   current: number
@@ -59,15 +58,15 @@ export default Vue.extend({
 
       if (this.options && this.options.length > 0) {
         const options = this.filter(this.options, results)
-        return this.mergeWithAsync(options).slice(0, this.count)
+        return options.slice(0, this.count)
       }
 
       if (this.settings && this.settings.options && this.settings.options.length > 0) {
         const options = this.filter(this.settings.options, results)
-        return this.mergeWithAsync(options).slice(0, this.count)
+        return options.slice(0, this.count)
       }
 
-      return this.mergeWithAsync(results).slice(0, this.count)
+      return results.slice(0, this.count)
     },
 
     isAnyFocused(): boolean {
@@ -82,36 +81,10 @@ export default Vue.extend({
       current: -1,
       checkpoint: null,
       selected: [],
-      asyncOptions: [],
     }
   },
 
   methods: {
-    detectOptionForSelect(): void {
-      if (this.tags && !this.isAnyFocused) {
-        this.addTag(newOption(this.criteria))
-        return
-      }
-
-      if (!this.isAnyFocused && !this.tags) {
-        // Ignore selection if there is no element highlighted in options when
-        // tags is disabled.
-        return
-      }
-
-      if (!this.isAnyFocused && this.tags && !this.multiple && this.criteria.length > 0) {
-        // If single tag is allowed, treat it as simple option, where value is
-        // criteria text.
-        this.onSelect(newOption(this.criteria))
-        return
-      }
-
-      const option = this.dropdownOptions[this.current]
-
-      // Select only if we have a value.
-      if (option) this.onSelect(option)
-    },
-
     createCheckpoint(option: CripSelectOption): void {
       this.checkpoint = option
     },
@@ -185,11 +158,6 @@ export default Vue.extend({
     onEscape(e: Event): void {
       if (this.checkpoint) {
         this.criteria = this.checkpoint.text
-        // TODO: Assume this is not correct behavior
-        // setup last checkpoint as current one
-        /*if (this.dropdownOptions.indexOf(this.checkpoint) === -1) {
-          this.options.push(this.checkpoint)
-        }*/
         this.current = this.dropdownOptions.indexOf(this.checkpoint)
         this.isOpen = false
         return
@@ -201,12 +169,21 @@ export default Vue.extend({
     },
 
     onEnter(e: Event): void {
-      if (this.isOpen) {
-        // Avoid form submit if dropdown is open.
-        e.preventDefault()
+      if (!this.isOpen) return
+
+      // Avoid form submit if dropdown is open.
+      e.preventDefault()
+
+      if (!this.isAnyFocused && !this.tags) {
+        // Ignore selection if there is no element highlighted in options when
+        // tags is disabled.
+        return
       }
 
-      this.detectOptionForSelect()
+      const option = this.dropdownOptions[this.current]
+
+      // Select only if we have a value.
+      if (option) this.onSelect(option)
     },
 
     onDown(e: Event): void {
@@ -251,10 +228,6 @@ export default Vue.extend({
       }
 
       return results
-    },
-
-    mergeWithAsync(options: Options): Options {
-      return [...options, ...this.asyncOptions]
     },
 
     asyncUpdate() {
