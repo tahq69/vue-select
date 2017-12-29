@@ -20,7 +20,7 @@ export interface CripSelectOptions {
 }
 
 export interface CripSelectOption {
-  key: string
+  key: string | number
   text: string
   value: any
 }
