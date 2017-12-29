@@ -15,14 +15,10 @@ module.exports = {
   },
   output: {
     path: resolve("lib"),
-    filename: "[name].js",
-    library: {
-      root: "CripVueSelect",
-      amd: "crip-vue-select",
-      commonjs: "crip-vue-select",
-    },
+    filename: "crip-vue-select.js",
     libraryTarget: "umd",
-    umdNamedDefine: true,
+    libraryExport: "default",
+    library: "CripVueSelect",
   },
   resolve: {
     extensions: [".ts", ".js", ".json"],
@@ -38,6 +34,18 @@ module.exports = {
         exclude: /node_modules|vue\/src|vendor\/*/,
         loader: "ts-loader",
         include: [resolve("src"), resolve("test")],
+        options: { appendTsSuffixTo: [/\.vue$/] },
+      },
+      {
+        test: /\.vue$/,
+        loader: "vue-loader",
+        options: {
+          loaders: {
+            scss: "vue-style-loader!css-loader!sass-loader",
+            sass: "vue-style-loader!css-loader!sass-loader?indentedSyntax",
+            esModule: true,
+          },
+        },
       },
       {
         test: /\.scss$/,

@@ -16,14 +16,10 @@ module.exports = {
   },
   output: {
     path: resolve("lib"),
-    filename: "[name].js",
-    library: {
-      root: "CripVueSelect",
-      amd: "crip-vue-select",
-      commonjs: "crip-vue-select",
-    },
+    filename: "crip-vue-select.js",
     libraryTarget: "umd",
-    umdNamedDefine: true,
+    libraryExport: "default",
+    library: "CripVueSelect",
   },
   resolve: {
     extensions: [".ts", ".js", ".json"],
@@ -91,7 +87,7 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: `/*!
 * Crip Vue Select v${version}
-* Forged by Igors Krasjukovs <tahq69@gmail.com>
+* (c) 2017-${(new Date).getFullYear} Igors Krasjukovs <tahq69@gmail.com>
 * Released under the MIT License.
 */`,
       raw: true,
@@ -102,7 +98,12 @@ module.exports = {
 
 if (process.env.NODE_ENV === "production") {
   module.exports.externals = {
-    vue: "Vue",
+    vue: {
+      commonjs: "vue",
+      commonjs2: "vue",
+      amd: "vue",
+      root: "Vue",
+    },
   }
 
   module.exports.devtool = "#source-map"
