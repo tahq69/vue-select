@@ -279,7 +279,12 @@ export default function(vue: typeof Vue) {
           if (this.multiple && this.selected.filter(v => v.key === option.key).length > 0)
             return false
 
-          return option.text.indexOf(this.criteria) > -1
+          // Filter by text when value is not selected or criteria i not same as
+          // selected value.
+          if (!this.checkpoint || this.checkpoint.text !== this.criteria)
+            return option.text.indexOf(this.criteria) > -1
+
+          return true
         })
 
         if (
