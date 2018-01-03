@@ -24,6 +24,8 @@ module.exports = {
     extensions: [".ts", ".js", ".json"],
     alias: {
       "@": resolve("src"),
+      "#": resolve("app"),
+      "$": resolve("types"),
       "&": resolve("test"),
     },
   },

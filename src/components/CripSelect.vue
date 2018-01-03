@@ -1,7 +1,9 @@
 <script lang="ts">
 import Vue from "vue"
-import { CripSelectOption, Options } from "./../../types/plugin"
 
+import { CripSelectOption, Options } from "$/plugin"
+
+import ClickOutside from "@/directives/ClickOutside"
 import debounce from "../debounce"
 import { uuidv4 } from "../help"
 import CripOptions from "./CripOptions.vue"
@@ -27,6 +29,8 @@ export default Vue.extend({
   name: "CripSelect",
 
   components: { CripOptions, CripTags },
+
+  directives: { ClickOutside },
 
   props: {
     options: {
@@ -126,6 +130,7 @@ export default Vue.extend({
 
     onDeselect(): void {
       this.isOpen = false
+      this.current = -1
       this.checkpoint = null
       this.criteria = ""
       this.$emit("input", null)
@@ -139,16 +144,13 @@ export default Vue.extend({
     },
 
     onBlur(e: Event): void {
-      setTimeout(() => {
-        // Close dropdown only when click binding is already propongadated.
-        this.isOpen = false
+      this.isOpen = false
 
-        if (this.checkpoint !== null) {
-          this.criteria = this.checkpoint.text
-        } else if (!this.tags) {
-          this.criteria = ""
-        }
-      }, 100)
+      if (this.checkpoint !== null) {
+        this.criteria = this.checkpoint.text
+      } else if (!this.tags) {
+        this.criteria = ""
+      }
     },
 
     onCtrlSpace(e: Event): void {
@@ -263,12 +265,12 @@ export default Vue.extend({
       <input :value="criteria"
              @input="onInput($event.target.value)"
              @focus="onFocus"
-             @blur="onBlur"
              @keydown.space.ctrl="onCtrlSpace"
              @keydown.esc="onEscape"
              @keydown.enter="onEnter"
              @keydown.down.prevent="onDown"
              @keydown.up.prevent="onUp"
+             v-click-outside="onBlur"
              type="text"
              class="form-control crip-input" />
 

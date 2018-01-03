@@ -4,6 +4,7 @@
     "paths": {
       "@/*": ["src/*"],
       "#/*": ["app/*"],
+      "$/*": ["types/*"],
       "&/*": ["test/*"]
     },
     "sourceMap": true,

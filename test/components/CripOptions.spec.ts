@@ -9,25 +9,31 @@ const option2 = { key: "2", text: "two", value: 2 }
 const propsData = { options: [option1, option2], criteria: "", current: -1 }
 
 describe("CripOptions", () => {
-  it("Wraps without errors", () => {
-    const wrapper = mount(CripOptions, { propsData })
+  const wrapper = mount(CripOptions, { propsData })
+
+  it("Validates properties", () => {
+    const props: any = wrapper.vm.$options.props
+    const options = props["options"]
+    const criteria = props["criteria"]
+    const current = props["current"]
+
+    expect(options.required).toBeTruthy()
+    expect(criteria.required).toBeTruthy()
+    expect(current.required).toBeTruthy()
+    expect(options.type).toBe(Array)
+    expect(criteria.type).toBe(String)
+    expect(current.type).toBe(Number)
   })
 
-  it("Contains passed properties", (done) => {
-    const wrapper = mount(CripOptions, { propsData })
-
-    // expect(wrapper.vm.options).toEqual([option1, option2])
-    // expect(wrapper.vm.criteria).toEqual("")
-    // expect(wrapper.vm.current).toEqual(-1)
-
-    done()
+  it("Should have empty current value if current index is -1", () => {
+    const data: any = wrapper.vm
+    expect(data.currentValue).toEqual(undefined)
   })
 
-  it("Should have empty current value if current index is -1", (done) => {
-    const wrapper = mount(CripOptions, { propsData })
+  it("Should set current value if index is changed", () => {
+    wrapper.setProps({ current: 0 })
 
-    // expect(wrapper.vm.currentValue).toEqual(undefined)
-
-    done()
+    const data: any = wrapper.vm
+    expect(data.currentValue).toEqual({ key: "1", text: "one", value: 1 })
   })
 })

@@ -12,7 +12,7 @@ let resolve = relativePath => path.resolve(__dirname, "./..", relativePath)
 
 module.exports = {
   entry: {
-    "crip-vue-select": resolve("src/main.ts"),
+    src: resolve("src/main.ts"),
   },
   output: {
     path: resolve("lib"),
@@ -22,9 +22,12 @@ module.exports = {
     library: "CripVueSelect",
   },
   resolve: {
-    extensions: [".ts", ".js", ".json"],
+    extensions: [".ts", ".js", ".vue", ".json"],
     alias: {
       "@": resolve("src"),
+      "#": resolve("app"),
+      $: resolve("types"),
+      "&": resolve("test"),
     },
   },
   module: {
@@ -64,11 +67,7 @@ module.exports = {
         test: /\.ts$/,
         loader: "string-replace-loader",
         query: { search: "__VERSION__", replace: version },
-      },
-      {
-        test: /\.html$/,
-        loader: "vue-template-loader",
-      },
+      }
     ],
   },
   performance: {
@@ -87,7 +86,7 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: `/*!
 * Crip Vue Select v${version}
-* (c) 2017-${(new Date).getFullYear} Igors Krasjukovs <tahq69@gmail.com>
+* (c) 2017-${new Date().getFullYear() + 1} Igors Krasjukovs <tahq69@gmail.com>
 * Released under the MIT License.
 */`,
       raw: true,
