@@ -9,14 +9,6 @@ import { uuidv4 } from "../help"
 import CripOptions from "./CripOptions.vue"
 import CripTags from "./CripTags.vue"
 
-interface Data {
-  checkpoint: null | CripSelectOption
-  criteria: string
-  current: number
-  isOpen: boolean
-  selected: Options
-}
-
 function newOption(value: string): CripSelectOption {
   return {
     key: uuidv4(),
@@ -53,7 +45,9 @@ export default Vue.extend({
     count: { type: Number, default: 12 },
     multiple: { type: Boolean, default: false },
     settings: { type: Object, default: () => ({}) },
+    id: { type: String, default: `crip-select-${uuidv4()}` },
     tags: { type: Boolean, default: false },
+    value: { type: [String, Number, Boolean, Object, Array], required: false },
   },
 
   computed: {
@@ -78,13 +72,13 @@ export default Vue.extend({
     },
   },
 
-  data(): Data {
+  data() {
     return {
-      isOpen: false,
-      criteria: "",
-      current: -1,
-      checkpoint: null,
-      selected: [],
+      isOpen: false as boolean,
+      criteria: "" as string,
+      current: -1 as number,
+      checkpoint: null as CripSelectOption | null,
+      selected: [] as Options,
     }
   },
 
@@ -232,6 +226,14 @@ export default Vue.extend({
       return results
     },
 
+    setupFromValue(value: any) {
+      if (typeof value !== "undefined" && (!this.settings || !this.settings.async)) {
+        this.dropdownOptions.map(opt => {
+          if (opt.value === value) this.onSelect(opt)
+        })
+      }
+    },
+
     asyncUpdate() {
       if (this.settings && this.settings.async && this.settings.update) {
         this.settings.update(this.criteria)
@@ -244,6 +246,8 @@ export default Vue.extend({
   },
 
   mounted() {
+    this.setupFromValue(this.value)
+
     if (this.settings && this.settings.init) {
       this.settings.init((option: CripSelectOption) => {
         this.onSelect(option)
@@ -251,6 +255,12 @@ export default Vue.extend({
     }
 
     this.asyncUpdate()
+  },
+
+  watch: {
+    value(newVal: any) {
+      this.setupFromValue(newVal)
+    },
   },
 })
 </script>
@@ -272,6 +282,7 @@ export default Vue.extend({
              @keydown.up.prevent="onUp"
              v-click-outside="onBlur"
              type="text"
+             :id="id"
              class="form-control crip-input" />
 
       <span v-if="clear"
