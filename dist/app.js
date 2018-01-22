@@ -1400,20 +1400,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-sm-8"
+    staticClass: "col col-md-8"
   }, [_c('router-view')], 1), _vm._v(" "), _c('div', {
-    staticClass: "col-sm-4"
+    staticClass: "col"
   }, [_c('div', {
-    staticClass: "panel panel-primary"
+    staticClass: "card card-primary"
   }, [_c('div', {
-    staticClass: "panel-heading",
+    staticClass: "card-header text-white bg-primary",
     attrs: {
       "id": "default-usage"
     }
-  }, [_vm._v("\n          Documentation\n        ")]), _vm._v(" "), _c('div', {
-    staticClass: "panel-body sidebar"
-  }, [_c('ul', {
-    staticClass: "list-group"
+  }, [_vm._v("\n          Documentation\n        ")]), _vm._v(" "), _c('ul', {
+    staticClass: "list-group list-group-flush"
   }, [_c('li', {
     staticClass: "list-group-item"
   }, [_c('router-link', {
@@ -1422,7 +1420,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         name: 'root'
       }
     }
-  }, [_vm._v("\n                Default usage\n              ")])], 1), _vm._v(" "), _c('li', {
+  }, [_vm._v("\n              Default usage\n            ")])], 1), _vm._v(" "), _c('li', {
     staticClass: "list-group-item"
   }, [_c('router-link', {
     attrs: {
@@ -1430,7 +1428,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         name: 'tags'
       }
     }
-  }, [_vm._v("\n                Tags usage\n              ")])], 1), _vm._v(" "), _c('li', {
+  }, [_vm._v("\n              Tags usage\n            ")])], 1), _vm._v(" "), _c('li', {
     staticClass: "list-group-item"
   }, [_c('router-link', {
     attrs: {
@@ -1438,7 +1436,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         name: 'async'
       }
     }
-  }, [_vm._v("\n                Async options usage\n              ")])], 1), _vm._v(" "), _c('li', {
+  }, [_vm._v("\n              Async options usage\n            ")])], 1), _vm._v(" "), _c('li', {
     staticClass: "list-group-item"
   }, [_c('router-link', {
     attrs: {
@@ -1446,7 +1444,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         name: 'configurations'
       }
     }
-  }, [_vm._v("\n                Configurations\n              ")])], 1)])])])])])])
+  }, [_vm._v("\n              Configurations\n            ")])], 1)])])])])])
 },staticRenderFns: []}
 
 /***/ }),
@@ -1550,6 +1548,7 @@ function newOption(value) {
         count: { type: Number, default: 12 },
         multiple: { type: Boolean, default: false },
         settings: { type: Object, default: function () { return ({}); } },
+        id: { type: String, default: "crip-select-" + Object(__WEBPACK_IMPORTED_MODULE_3__help__["b" /* uuidv4 */])() },
         tags: { type: Boolean, default: false },
         value: { type: [String, Number, Boolean, Object, Array], required: false },
     },
@@ -1696,6 +1695,15 @@ function newOption(value) {
             }
             return results;
         },
+        setupFromValue: function (value) {
+            var _this = this;
+            if (typeof value !== "undefined" && (!this.settings || !this.settings.async)) {
+                this.dropdownOptions.map(function (opt) {
+                    if (opt.value === value)
+                        _this.onSelect(opt);
+                });
+            }
+        },
         asyncUpdate: function () {
             if (this.settings && this.settings.async && this.settings.update) {
                 this.settings.update(this.criteria);
@@ -1707,6 +1715,7 @@ function newOption(value) {
     },
     mounted: function () {
         var _this = this;
+        this.setupFromValue(this.value);
         if (this.settings && this.settings.init) {
             this.settings.init(function (option) {
                 _this.onSelect(option);
@@ -1715,14 +1724,8 @@ function newOption(value) {
         this.asyncUpdate();
     },
     watch: {
-        value: function (newVal, oldVal) {
-            var _this = this;
-            if (!this.settings || !this.settings.init || !this.settings.async) {
-                this.dropdownOptions.map(function (opt) {
-                    if (opt.value === newVal)
-                        _this.onSelect(opt);
-                });
-            }
+        value: function (newVal) {
+            this.setupFromValue(newVal);
         },
     },
 }));
@@ -1929,8 +1932,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('li', [_c('a', {
-    staticClass: "crip-option",
+  return _c('a', {
+    staticClass: "crip-option dropdown-item",
     attrs: {
       "href": "#"
     },
@@ -1943,7 +1946,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.select($event)
       }
     }
-  })])
+  })
 },staticRenderFns: []}
 
 /***/ }),
@@ -1951,7 +1954,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('ul', {
+  return _c('div', {
     staticClass: "dropdown-menu crip-options"
   }, [_vm._l((_vm.options), function(option) {
     return _c('CripOption', {
@@ -1967,9 +1970,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "select": _vm.select
       }
     })
-  }), _vm._v(" "), (_vm.options.length === 0) ? _c('li', {
-    staticClass: "disabled"
-  }, [_c('a', {
+  }), _vm._v(" "), (_vm.options.length === 0) ? _c('a', {
+    staticClass: "disabled dropdown-item",
     attrs: {
       "href": "#"
     },
@@ -1979,7 +1981,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         (function () { return null; })($event)
       }
     }
-  }, [_vm._v("No data")])]) : _vm._e()], 2)
+  }, [_vm._t("default")], 2) : _vm._e()], 2)
 },staticRenderFns: []}
 
 /***/ }),
@@ -2035,11 +2037,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return (_vm.show) ? _c('div', {
-    staticClass: "input-group-btn crip-tags"
+    staticClass: "input-group-btn input-group-prepend crip-tags"
   }, _vm._l((_vm.tags), function(tag) {
     return _c('button', {
       key: tag.key,
-      staticClass: "btn btn-default",
+      staticClass: "btn btn-default btn-outline-secondary",
       attrs: {
         "title": "Remove",
         "type": "button"
@@ -2061,7 +2063,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "crip-select dropdown",
     class: {
-      'open': _vm.isOpen
+      'open show': _vm.isOpen
     }
   }, [_c('div', {
     class: {
@@ -2083,7 +2085,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     staticClass: "form-control crip-input",
     attrs: {
-      "type": "text"
+      "type": "text",
+      "id": _vm.id
     },
     domProps: {
       "value": _vm.criteria
@@ -2114,9 +2117,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }]
     }
   }), _vm._v(" "), (_vm.clear) ? _c('span', {
-    staticClass: "input-group-btn crip-close-btn"
+    staticClass: "input-group-btn input-group-prepend crip-close-btn"
   }, [_c('button', {
-    staticClass: "btn btn-default",
+    staticClass: "btn btn-default btn-outline-secondary",
     attrs: {
       "type": "button"
     },
@@ -2127,6 +2130,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }
   }, [_vm._v("\n        ×\n      ")])]) : _vm._e()], 1), _vm._v(" "), _c('CripOptions', {
+    class: {
+      'open show': _vm.isOpen
+    },
     attrs: {
       "options": _vm.dropdownOptions,
       "criteria": _vm.criteria,
@@ -2135,7 +2141,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "select": _vm.onSelect
     }
-  })], 1)
+  }, [_vm._t("default")], 2)], 1)
 },staticRenderFns: []}
 
 /***/ }),
@@ -3385,11 +3391,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "panel panel-primary"
+    staticClass: "card mb-3"
   }, [_c('div', {
-    staticClass: "panel-heading"
+    staticClass: "card-header text-white bg-primary"
   }, [_vm._v(_vm._s(_vm.title))]), _vm._v(" "), _c('div', {
-    staticClass: "panel-body"
+    staticClass: "card-body"
   }, [_vm._t("default")], 2)])
 },staticRenderFns: []}
 
@@ -3405,7 +3411,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-xs-12"
+    staticClass: "col-12"
   }, [_c('p', [_vm._v("Tags property allows to select un-existing value.")]), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('crip-select', {
@@ -3486,9 +3492,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-xs-12"
+    staticClass: "col-12"
   }, [_c('p', [_vm._v("Some configurations.")]), _vm._v(" "), _c('button', {
-    staticClass: "btn btn-default",
+    staticClass: "btn btn-default btn-secondary",
     on: {
       "click": _vm.alert
     }
@@ -3559,7 +3565,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-xs-12"
+    staticClass: "col-12"
   }, [_c('p', [_vm._v("To start using component you need simply register it.")]), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('crip-select', {
@@ -3574,7 +3580,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "selectedValue1"
     }
-  })], 1), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n            When data list is empty, slot value appears in option\n          ")])], 1), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('label', {
     staticClass: "control-label"
@@ -3589,7 +3595,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-xs-12"
+    staticClass: "col-12"
   }, [_c('p', [_vm._v("\n          Set\n          "), _c('code', [_vm._v("multiple")]), _vm._v(" property to\n          "), _c('code', [_vm._v("true")]), _vm._v(" to allow select multiple values from options. This will create an array\n          object in resulting model.\n        ")]), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('crip-select', {
@@ -3605,7 +3611,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       expression: "selectedValue2"
     }
-  })], 1), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n            When data list is empty, slot value appears in option\n          ")])], 1), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('label', {
     staticClass: "control-label"
@@ -3680,7 +3686,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-xs-12"
+    staticClass: "col-12"
   }, [_c('p', [_vm._v("Tags property allows to select un-existing value.")]), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('crip-select', {
@@ -3711,7 +3717,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-xs-12"
+    staticClass: "col-12"
   }, [_c('p', [_vm._v("\n          Tags property together with multiple - allows to select many values including non\n          existing ones and resulting object always will be an array of selected\n          options.\n        ")]), _vm._v(" "), _c('div', {
     staticClass: "form-group"
   }, [_c('crip-select', {
