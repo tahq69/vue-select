@@ -15,7 +15,7 @@ module.exports = {
     src: resolve("src/main.ts"),
   },
   output: {
-    path: resolve("lib"),
+    path: resolve("../competition-manager-ui/node_modules/crip-vue-select/lib"),
     filename: "crip-vue-select.js",
     libraryTarget: "umd",
     libraryExport: "default",

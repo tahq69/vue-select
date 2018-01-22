@@ -29,7 +29,7 @@ export default Vue.extend({
   <div>
     <example-section title="Select tags">
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-12">
           <p>Tags property allows to select un-existing value.</p>
           <div class="form-group">
             <crip-select :options="options"
@@ -73,7 +73,7 @@ export default Vue.extend({
 
     <example-section title="Multiple select tags">
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-12">
           <p>
             Tags property together with multiple - allows to select many values including non
             existing ones and resulting object always will be an array of selected

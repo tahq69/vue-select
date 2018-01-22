@@ -5,19 +5,7 @@
 @import "variables";
 
 // Bootstrap
-@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~bootstrap/scss/bootstrap";
 
 // Custom styles
-@import "navbar";
-@import "navbar-toggle";
 @import "code-theme";
-
-.crip-section {
-  margin: 20px 0;
-}
-
-@media (min-width: $screen-sm-min) {
-  .crip-section {
-    margin: 60px 0;
-  }
-}

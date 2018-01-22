@@ -26,10 +26,8 @@ export default Vue.extend({
 </script>
 
 <template>
-  <li>
-    <a @click.prevent="select"
-       v-html="text"
-       href="#"
-       class="crip-option"></a>
-  </li>
+  <a @click.prevent="select"
+     v-html="text"
+     href="#"
+     class="crip-option dropdown-item"></a>
 </template>

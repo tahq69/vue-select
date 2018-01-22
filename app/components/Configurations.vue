@@ -16,10 +16,10 @@ export default Vue.extend({
 <template>
   <example-section title="Configurations">
     <div class="row">
-      <div class="col-xs-12">
+      <div class="col-12">
         <p>Some configurations.</p>
 
-        <button class="btn btn-default"
+        <button class="btn btn-default btn-secondary"
                 @click="alert">
           Alert
         </button>

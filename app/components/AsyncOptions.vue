@@ -55,7 +55,7 @@ export default Vue.extend({
   <div>
     <example-section title="Async options">
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-12">
           <p>Tags property allows to select un-existing value.</p>
           <div class="form-group">
             <crip-select :settings="settings"

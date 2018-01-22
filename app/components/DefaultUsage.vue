@@ -29,12 +29,14 @@ export default Vue.extend({
   <div>
     <example-section title="Default usage">
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-12">
           <p>To start using component you need simply register it.</p>
           <div class="form-group">
             <crip-select :options="options"
                          :clear="true"
-                         v-model="selectedValue1" />
+                         v-model="selectedValue1">
+              When data list is empty, slot value appears in option
+            </crip-select>
           </div>
           <div class="form-group">
             <label class="control-label">Selected value:</label>
@@ -71,7 +73,7 @@ export default Vue.extend({
 
     <example-section title="Multi select">
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-12">
           <p>
             Set
             <code>multiple</code> property to
@@ -82,7 +84,9 @@ export default Vue.extend({
             <crip-select :options="options"
                          :multiple="true"
                          :clear="true"
-                         v-model="selectedValue2" />
+                         v-model="selectedValue2">
+              When data list is empty, slot value appears in option
+            </crip-select>
           </div>
           <div class="form-group">
             <label class="control-label">Selected value:</label>

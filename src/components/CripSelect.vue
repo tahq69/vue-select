@@ -266,7 +266,7 @@ export default Vue.extend({
 </script>
 
 <template>
-  <div :class="{'open': isOpen}"
+  <div :class="{'open show': isOpen}"
        class="crip-select dropdown">
     <div :class="{'input-group': (multiple && selected.length) || clear}">
       <CripTags :tags="selected"
@@ -286,9 +286,9 @@ export default Vue.extend({
              class="form-control crip-input" />
 
       <span v-if="clear"
-            class="input-group-btn crip-close-btn">
+            class="input-group-btn input-group-prepend crip-close-btn">
         <button @click.prevent="onDeselect"
-                class="btn btn-default"
+                class="btn btn-default btn-outline-secondary"
                 type="button">
           ×
         </button>
@@ -298,7 +298,10 @@ export default Vue.extend({
     <CripOptions :options="dropdownOptions"
                  :criteria="criteria"
                  :current="current"
-                 @select="onSelect" />
+                 :class="{'open show': isOpen}"
+                 @select="onSelect">
+      <slot><!-- default slot --></slot>
+    </CripOptions>
   </div>
 </template>
 

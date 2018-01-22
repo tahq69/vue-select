@@ -1,5 +1,5 @@
 /*!
-* Crip Vue Select v0.0.6
+* Crip Vue Select v0.0.7
 * Forged by Igors Krasjukovs <tahq69@gmail.com>
 * Released under the MIT License.
 */
@@ -676,7 +676,7 @@ var CripVueSelect = /** @class */ (function () {
 }());
 /* harmony default export */ __webpack_exports__["a"] = (CripVueSelect);
 CripVueSelect.install = __WEBPACK_IMPORTED_MODULE_1__install__["a" /* default */];
-CripVueSelect.version = "0.0.6";
+CripVueSelect.version = "0.0.7";
 
 
 /***/ }),
@@ -1551,6 +1551,7 @@ function newOption(value) {
         multiple: { type: Boolean, default: false },
         settings: { type: Object, default: function () { return ({}); } },
         tags: { type: Boolean, default: false },
+        value: { type: [String, Number, Boolean, Object, Array], required: false },
     },
     computed: {
         dropdownOptions: function () {
@@ -1712,6 +1713,17 @@ function newOption(value) {
             });
         }
         this.asyncUpdate();
+    },
+    watch: {
+        value: function (newVal, oldVal) {
+            var _this = this;
+            if (!this.settings || !this.settings.init || !this.settings.async) {
+                this.dropdownOptions.map(function (opt) {
+                    if (opt.value === newVal)
+                        _this.onSelect(opt);
+                });
+            }
+        },
     },
 }));
 

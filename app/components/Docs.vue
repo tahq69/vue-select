@@ -9,42 +9,40 @@ export default Vue.extend({
 <template>
   <div class="container root">
     <div class="row">
-      <div class="col-sm-8">
+      <div class="col col-md-8">
         <router-view />
       </div>
-      <div class="col-sm-4">
-        <div class="panel panel-primary">
-          <div class="panel-heading"
+      <div class="col">
+        <div class="card card-primary">
+          <div class="card-header text-white bg-primary"
                id="default-usage">
             Documentation
           </div>
-          <div class="panel-body sidebar">
-            <ul class="list-group">
-              <li class="list-group-item">
-                <router-link :to="{name: 'root'}">
-                  Default usage
-                </router-link>
-              </li>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <router-link :to="{name: 'root'}">
+                Default usage
+              </router-link>
+            </li>
 
-              <li class="list-group-item">
-                <router-link :to="{name: 'tags'}">
-                  Tags usage
-                </router-link>
-              </li>
+            <li class="list-group-item">
+              <router-link :to="{name: 'tags'}">
+                Tags usage
+              </router-link>
+            </li>
 
-              <li class="list-group-item">
-                <router-link :to="{name: 'async'}">
-                  Async options usage
-                </router-link>
-              </li>
+            <li class="list-group-item">
+              <router-link :to="{name: 'async'}">
+                Async options usage
+              </router-link>
+            </li>
 
-              <li class="list-group-item">
-                <router-link :to="{name: 'configurations'}">
-                  Configurations
-                </router-link>
-              </li>
-            </ul>
-          </div>
+            <li class="list-group-item">
+              <router-link :to="{name: 'configurations'}">
+                Configurations
+              </router-link>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
