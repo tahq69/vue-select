@@ -2,7 +2,7 @@ import Vue from "vue"
 
 export type UpdateOptions<T = any> = (options: Options<T>) => void
 export type SelectOption<T = any> = (option: CripSelectOption<T>) => void
-export type OnInit<T = any> = (select: SelectOption<T>) => void
+export type OnInit<T = any> = (select: SelectOption<T>, updateOptions: UpdateOptions<T>) => void
 export type OnUpdate<T = any> = (criteria: string, update: UpdateOptions<T>) => void
 export type Options<T = any> = CripSelectOption<T>[]
 export type Install = (vue: typeof Vue, options?: CripSelectOptions) => void

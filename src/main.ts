@@ -13,7 +13,6 @@ import {
   Settings,
 } from "../types/plugin"
 
-
 export default class CripVueSelect {
   public static install: Install
   public static version: string
@@ -46,15 +45,28 @@ export default class CripVueSelect {
     this.onInitMethod = callback
   }
 
-  public init(select: (opt: CripSelectOption) => void): void {
+  public init(select: (opt: CripSelectOption) => void, setOptions: (opts?: Options) => void): void {
     if (this.onInitMethod) {
       this.loading.push(true)
 
-      this.onInitMethod(option => {
-        this.loading.splice(0, 1)
-        this.options.push(option)
-        select(option)
-      })
+      let spliced = false
+      const spliceOnce = () => {
+        if (!spliced) this.loading.splice(0, 1)
+        spliced = true
+      }
+
+      this.onInitMethod(
+        option => {
+          spliceOnce()
+          this.options.push(option)
+          select(option)
+        },
+        options => {
+          spliceOnce()
+          this.options = options
+          setOptions()
+        }
+      )
     }
   }
 

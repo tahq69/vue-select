@@ -228,7 +228,8 @@ export default Vue.extend({
 
     setupFromValue(value: any) {
       if (typeof value !== "undefined" && (!this.settings || !this.settings.async)) {
-        this.dropdownOptions.map(opt => {
+        console.log("setupFromValue", this.dropdownOptions.map(o => o.value), value)
+        this.dropdownOptions.forEach(opt => {
           if (opt.value === value) this.onSelect(opt)
         })
       }
@@ -247,18 +248,25 @@ export default Vue.extend({
 
   mounted() {
     this.setupFromValue(this.value)
-
-    if (this.settings && this.settings.init) {
-      this.settings.init((option: CripSelectOption) => {
-        this.onSelect(option)
-      })
-    }
+    this.settings.init(
+      (option: CripSelectOption) => {
+        // Option is not required, as it may be chosen by model value from
+        // options, or can be overwritten on init stage by this value.
+        if (option) this.onSelect(option)
+      },
+      () => {
+        // Allow user setup options once, when initializing component and try to
+        // select value from model ath that moment.
+        this.setupFromValue(this.value)
+      }
+    )
 
     this.asyncUpdate()
   },
 
   watch: {
     value(newVal: any) {
+      console.log("watch:value", newVal)
       this.setupFromValue(newVal)
     },
   },
@@ -300,7 +308,9 @@ export default Vue.extend({
                  :current="current"
                  :class="{'open show': isOpen}"
                  @select="onSelect">
-      <slot><!-- default slot --></slot>
+      <slot>
+        <!-- default slot -->
+      </slot>
     </CripOptions>
   </div>
 </template>
