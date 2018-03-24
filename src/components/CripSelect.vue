@@ -6,7 +6,7 @@ import { Options, SelectOption } from "$/plugin"
 
 import ClickOutside from "@/directives/ClickOutside"
 import debounce from "../debounce"
-import { uuidv4 } from "../help"
+import { log, uuidv4 } from "../help"
 import CripVueSelect from "../main"
 import CripOptions from "./CripOptions.vue"
 import CripTags from "./CripTags.vue"
@@ -94,10 +94,12 @@ export default Vue.extend({
 
   methods: {
     createCheckpoint(option: SelectOption): void {
+      log("debug", "createCheckpoint(option)", { option })
       this.checkpoint = option
     },
 
     addTag(option: SelectOption): void {
+      log("debug", "addTag(option)", { option })
       this.selected.push(option)
       this.$emit("input", this.selected.map(opt => opt.value))
       this.criteria = ""
@@ -107,11 +109,13 @@ export default Vue.extend({
     },
 
     onTagRemove(option: SelectOption): void {
+      log("debug", "onTagRemove(option)", { option })
       this.selected.splice(this.selected.indexOf(option), 1)
       this.$emit("input", this.selected.map(opt => opt.value))
     },
 
     onInput(criteria: string) {
+      log("debug", "onInput(criteria)", { criteria })
       this.isOpen = true
       this.current = 0
       this.criteria = criteria
@@ -120,6 +124,7 @@ export default Vue.extend({
     },
 
     onSelect(option: SelectOption): void {
+      log("debug", "onSelect(option)", { option, multiple: this.multiple })
       if (this.multiple) {
         this.addTag(option)
         return
@@ -133,6 +138,7 @@ export default Vue.extend({
     },
 
     onDeselect(): void {
+      log("debug", "onDeselect()", {})
       this.isOpen = false
       this.current = -1
       this.checkpoint = null
@@ -144,10 +150,12 @@ export default Vue.extend({
     },
 
     onFocus(e: Event): void {
+      log("debug", "onFocus()", {})
       this.isOpen = true
     },
 
     onBlur(e: Event): void {
+      log("debug", "onBlur()", {})
       this.isOpen = false
 
       if (this.checkpoint !== null) {
@@ -158,10 +166,12 @@ export default Vue.extend({
     },
 
     onCtrlSpace(e: Event): void {
+      log("debug", "onCtrlSpace()", {})
       this.isOpen = true
     },
 
     onEscape(e: Event): void {
+      log("debug", "onEscape(e)", { e, checkpoint: this.checkpoint })
       if (this.checkpoint) {
         this.criteria = this.checkpoint.text
         this.current = this.dropdownOptions.indexOf(this.checkpoint)
@@ -175,6 +185,14 @@ export default Vue.extend({
     },
 
     onEnter(e: Event): void {
+      log("debug", "onEnter(e)", {
+        e,
+        isOpen: this.isOpen,
+        isAnyFocused: this.isAnyFocused,
+        tags: this.tags,
+        current: this.current,
+      })
+
       if (!this.isOpen) return
 
       // Avoid form submit if dropdown is open.
@@ -193,6 +211,7 @@ export default Vue.extend({
     },
 
     onDown(e: Event): void {
+      log("debug", "onDown(e)", { e })
       this.onFocus(e)
 
       if (this.current < this.dropdownOptions.length - 1) {
@@ -201,6 +220,7 @@ export default Vue.extend({
     },
 
     onUp(e: Event): void {
+      log("debug", "onUp(e)", { e })
       this.onFocus(e)
 
       if (this.current > 0) {
@@ -209,7 +229,10 @@ export default Vue.extend({
     },
 
     filter(options: Options): Options {
-      if (!this.multiple && this.criteria.length < 3) return options
+      if (!this.multiple && this.criteria.length < 3) {
+        log("debug", "filter(options)", { options })
+        return options
+      }
 
       const results = options.filter(option => {
         // Ignore already selected options for tagging.
@@ -231,10 +254,12 @@ export default Vue.extend({
         results.unshift(newOption(this.criteria))
       }
 
+      log("debug", "filter(options)", { options, results, tagRequired: this.tagRequired })
       return results
     },
 
     setupFromValue(value: any) {
+      log("debug", "setupFromValue(value)", { value })
       if (typeof value !== "undefined" && (!this.settings || !this.settings.async)) {
         this.dropdownOptions.forEach(opt => {
           if (opt.value === value) this.onSelect(opt)
@@ -243,11 +268,14 @@ export default Vue.extend({
     },
 
     asyncUpdate() {
+      log("debug", "asyncUpdate()", { settings: this.settings })
       if (this.settings && this.settings.async) {
         const resultOptions: SelectOption[] = []
         this.settings.onCriteriaChange.forEach(listenner => {
           listenner(this.criteria, options => resultOptions.concat(options))
         })
+
+        log("debug", "asyncUpdate()", { resultOptions })
         this.settings.options = resultOptions
       }
     },
@@ -258,12 +286,14 @@ export default Vue.extend({
   },
 
   mounted() {
+    log("debug", "CripSelect.vue", "mounted")
     this.setupFromValue(this.value)
     this.asyncUpdate()
   },
 
   watch: {
-    value(newVal: any) {
+    value(newVal: any, oldVal: any) {
+      log("debug", "CripSelect.value.change", { newVal, oldVal })
       this.setupFromValue(newVal)
     },
   },

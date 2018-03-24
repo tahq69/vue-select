@@ -1,6 +1,7 @@
 import Vue from "vue"
 
 import "./assets/styles.scss"
+import { log } from "./help"
 import install from "./install"
 
 import {
@@ -21,6 +22,8 @@ export default class CripVueSelect {
   public onCriteriaChange: CriteriaChanged[] = []
 
   constructor(settings: Settings) {
+    log("debug", "CripVueSelect(settings)", { settings })
+
     this.loading = []
     if (Array.isArray(settings)) {
       this.options = settings
@@ -30,6 +33,7 @@ export default class CripVueSelect {
     this.options = settings.options || []
 
     if (settings.onCriteriaChange) {
+      log("debug", "CripVueSelect(settings)", "async")
       this.async = true
       this.onCriteriaChange.push(settings.onCriteriaChange)
     }
