@@ -8,6 +8,7 @@ import CripSelect from "@/main"
 const options = [
   { key: "1", text: "one", value: { num: 1, flag: "lv" } },
   { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+  { key: "3", text: "three", value: { num: 3, flag: "ru" } },
 ]
 
 export default Vue.extend({
@@ -33,7 +34,6 @@ export default Vue.extend({
           <p>To start using component you need simply register it.</p>
           <div class="form-group">
             <crip-select :options="options"
-                         :clear="true"
                          v-model="selectedValue1">
               When data list is empty, slot value appears in option
             </crip-select>
@@ -53,7 +53,6 @@ export default Vue.extend({
         Vue.extend({
           template: `
             &lt;crip-select :options="options"
-                         :clear="true"
                          v-model="selectedValue" /&gt;
 
             &lt;code v-text="JSON.stringify(selectedValue, null, 4)"&gt;&lt;/code&gt;
@@ -63,6 +62,7 @@ export default Vue.extend({
               options: [
                 { key: "1", text: "one", value: { num: 1, flag: "lv" } },
                 { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+                { key: "3", text: "three", value: { num: 3, flag: "ru" } },
               ],
               selectedValue: null,
             }
@@ -75,16 +75,14 @@ export default Vue.extend({
       <div class="row">
         <div class="col-12">
           <p>
-            Set
-            <code>multiple</code> property to
-            <code>true</code> to allow select multiple values from options. This will create an array
-            object in resulting model.
+            Set <code>multiple</code> attribute to to allow select multiple
+            values from options. This will create an array object in resulting
+            model.
           </p>
           <div class="form-group">
             <crip-select :options="options"
-                         :multiple="true"
-                         :clear="true"
-                         v-model="selectedValue2">
+                         v-model="selectedValue2"
+                         multiple>
               When data list is empty, slot value appears in option
             </crip-select>
           </div>
@@ -103,8 +101,8 @@ export default Vue.extend({
         Vue.extend({
           template: `
             &lt;crip-select :options="options"
-                         :clear="true"
-                         v-model="selectedValue" /&gt;
+                         v-model="selectedValue"
+                         multiple /&gt;
 
             &lt;code v-text="JSON.stringify(selectedValue, null, 4)"&gt;&lt;/code&gt;
           `,
@@ -113,6 +111,7 @@ export default Vue.extend({
               options: [
                 { key: "1", text: "one", value: { num: 1, flag: "lv" } },
                 { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+                { key: "3", text: "three", value: { num: 3, flag: "ru" } },
               ],
               selectedValue: null,
             }

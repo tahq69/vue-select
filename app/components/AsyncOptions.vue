@@ -1,7 +1,9 @@
 <script lang="ts">
+// tslint:disable:no-console
+
 import http from "axios"
 import Vue from "vue"
-import { CripSelectOption, SelectOption, UpdateOptions } from "./../../types/plugin"
+import { SelectOption } from "./../../types/plugin"
 
 import CripSelect from "@/main"
 import CodeSample from "./CodeSample.vue"
@@ -14,18 +16,11 @@ interface Post {
   body: string
 }
 
-function fetchData(criteria: string): Promise<CripSelectOption[]> {
+function fetchData(criteria: string): Promise<SelectOption[]> {
   return http.get("https://jsonplaceholder.typicode.com/posts").then(response => {
     return response.data
-      .reduce((acc: CripSelectOption[], post: Post) => {
-        const key = post.id.toString()
-        const text = post.title
-        const value = post.id
-        acc.push({ key, text, value })
-
-        return acc
-      }, [])
-      .filter((o: CripSelectOption) => o.text.indexOf(criteria) > -1)
+      .map((post: Post) => ({ key: post.id, text: post.title, value: post.id }))
+      .filter((o: SelectOption) => o.text.indexOf(criteria) > -1)
   })
 }
 
@@ -36,16 +31,12 @@ export default Vue.extend({
 
   data() {
     return {
+      selectedValue: null,
       settings: new CripSelect({
-        async: true,
-        onUpdate: (criteria: string, update: UpdateOptions) => {
+        onCriteriaChange: (criteria, update) => {
           fetchData(criteria).then(data => update(data))
         },
-        onInit: (select: SelectOption) => {
-          fetchData("").then(data => select(data[0]))
-        },
       }),
-      selectedValue: null,
     }
   },
 })
@@ -56,12 +47,17 @@ export default Vue.extend({
     <example-section title="Async options">
       <div class="row">
         <div class="col-12">
-          <p>Tags property allows to select un-existing value.</p>
+          <p>
+            It is possible to fetch data asynchrounusly from server, when
+            criteria value changes. It requires to pass settings attribute to
+            the component and provie callback method for data load.
+          </p>
           <div class="form-group">
             <crip-select :settings="settings"
-                         :clear="true"
-                         :tags="true"
-                         v-model="selectedValue" />
+                         v-model="selectedValue"
+                         clear>
+              Please enter valid criteria to fine existing values. 
+            </crip-select>
           </div>
           <div class="form-group">
             <label class="control-label">Selected value:</label>
@@ -77,19 +73,29 @@ export default Vue.extend({
 
         Vue.extend({
           template: `
-            &lt;crip-select :options="options"
-                         :clear="true"
-                         :tags="true"
-                         v-model="selectedValue" /&gt;
+            &lt;crip-select :settings="settings"
+                         v-model="selectedValue"
+                         clear
+                         tags /&gt;
 
             &lt;code v-text="JSON.stringify(selectedValue, null, 4)"&gt;&lt;/code&gt;
           `,
           data() {
             return {
-              options: [
-                { key: "1", text: "one", value: { num: 1, flag: "lv" } },
-                { key: "2", text: "two", value: { num: 2, flag: "gb" } },
-              ],
+              settings: new CripSelect({
+                onCriteriaChange: (criteria, setOptionsList, id) => {
+                  fetchData(criteria).then(data => {
+                    var options = data.map(d => ({
+                      key: d.Id,
+                      text: d.Title,
+                      value: d.Id
+                    }))
+
+                    // id makes sure that outdated data is not preset for user.
+                    setOptionsList(options, id)
+                  })
+                },
+              }),
               selectedValue: null,
             }
           }

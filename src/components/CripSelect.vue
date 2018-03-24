@@ -273,7 +273,7 @@ export default Vue.extend({
       if (this.settings && this.settings.async) {
         // Reset options to emty array.
         this.settings.setOptions([])
-        let id = uuidv4()
+        const id = uuidv4()
 
         this.settings.onCriteriaChangeStack.forEach(action => {
           log("debug", "asyncUpdate.call", { action, criteria: this.criteria })

@@ -8,6 +8,7 @@ import CripSelect from "@/main"
 const options = [
   { key: "1", text: "one", value: { num: 1, flag: "lv" } },
   { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+  { key: "3", text: "three", value: { num: 3, flag: "ru" } },
 ]
 
 export default Vue.extend({
@@ -30,12 +31,16 @@ export default Vue.extend({
     <example-section title="Select tags">
       <div class="row">
         <div class="col-12">
-          <p>Tags property allows to select un-existing value.</p>
+          <p><code>tags</code> attribute allows to select un-existing value.</p>
+          <p>
+            <code>clear</code> attribute adds input clear button and sets
+            <code>null</code> as a model value when clicked.
+          </p>
           <div class="form-group">
             <crip-select :options="options"
-                         :clear="true"
-                         :tags="true"
-                         v-model="selectedValue1" />
+                         v-model="selectedValue1"
+                         clear
+                         tags />
           </div>
           <div class="form-group">
             <label class="control-label">Selected value:</label>
@@ -52,9 +57,9 @@ export default Vue.extend({
         Vue.extend({
           template: `
             &lt;crip-select :options="options"
-                         :clear="true"
-                         :tags="true"
-                         v-model="selectedValue" /&gt;
+                         v-model="selectedValue"
+                         clear
+                         tags /&gt;
 
             &lt;code v-text="JSON.stringify(selectedValue, null, 4)"&gt;&lt;/code&gt;
           `,
@@ -63,6 +68,7 @@ export default Vue.extend({
               options: [
                 { key: "1", text: "one", value: { num: 1, flag: "lv" } },
                 { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+                { key: "3", text: "three", value: { num: 3, flag: "ru" } },
               ],
               selectedValue: null,
             }
@@ -75,15 +81,15 @@ export default Vue.extend({
       <div class="row">
         <div class="col-12">
           <p>
-            Tags property together with multiple - allows to select many values including non
-            existing ones and resulting object always will be an array of selected
-            options.
+            <code>tags</code> attribute together with <code>multiple</code>
+            allows to select many values including non existing ones and
+            resulting object always will be an array of selected options.
           </p>
           <div class="form-group">
             <crip-select :options="options"
-                         :tags="true"
-                         :multiple="true"
-                         v-model="selectedValue2" />
+                         v-model="selectedValue2"
+                         multiple
+                         tags />
           </div>
           <div class="form-group">
             <label class="control-label">Selected value:</label>
@@ -100,10 +106,9 @@ export default Vue.extend({
         Vue.extend({
           template: `
             &lt;crip-select :options="options"
-                         :multiple="true"
-                         :clear="true"
-                         :tags="true"
-                         v-model="selectedValue" /&gt;
+                         v-model="selectedValue"
+                         multiple
+                         tags /&gt;
 
             &lt;code v-text="JSON.stringify(selectedValue, null, 4)"&gt;&lt;/code&gt;
           `,
@@ -112,6 +117,7 @@ export default Vue.extend({
               options: [
                 { key: "1", text: "one", value: { num: 1, flag: "lv" } },
                 { key: "2", text: "two", value: { num: 2, flag: "gb" } },
+                { key: "3", text: "three", value: { num: 3, flag: "ru" } },
               ],
               selectedValue: null,
             }
