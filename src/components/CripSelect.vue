@@ -269,15 +269,28 @@ export default Vue.extend({
     },
 
     asyncUpdate() {
-      log("debug", "asyncUpdate()", { settings: this.settings })
+      log("debug", "asyncUpdate()", { settings: this.settings, criteria: this.criteria })
       if (this.settings && this.settings.async) {
-        const resultOptions: SelectOption[] = []
-        this.settings.onCriteriaChangeStack.forEach(listenner => {
-          listenner(this.criteria, options => resultOptions.concat(options))
-        })
+        // Reset options to emty array.
+        this.settings.setOptions([])
+        let id = uuidv4()
 
-        log("debug", "asyncUpdate()", { resultOptions })
-        this.settings.options = resultOptions
+        this.settings.onCriteriaChangeStack.forEach(action => {
+          log("debug", "asyncUpdate.call", { action, criteria: this.criteria })
+          action(
+            this.criteria,
+            (options, responseId) => {
+              log("debug", "asyncUpdate.call.merge", { action, options, id, responseId })
+              // Ignore received results if not from current action identifier.
+              if (typeof responseId === "string" && responseId !== id) return
+
+              // Merge data when received. This allows make async requests to
+              // fetch data from multiple sources.
+              this.settings.addOption(options)
+            },
+            id
+          )
+        })
       }
     },
 

@@ -42,19 +42,28 @@ export default class CripVueSelect<T = any> {
   }
 
   public onCriteriaChange(action: CriteriaChanged<T>): void {
+    log("debug", "CripVueSelect.onCriteriaChange(action)", { action })
     this.onCriteriaChangeStack.push(action)
   }
 
   public addOption(options: Options<T> | SelectOption<T>): void {
-    if (Array.isArray(options)) this.options.concat(options)
+    log("debug", "CripVueSelect.addOption(options)", { options })
+    if (Array.isArray(options)) this.options = this.options.concat(options)
     else this.options.push(options)
   }
 
+  public setOptions(options: Options<T>) {
+    log("debug", "CripVueSelect.setOptions(options)", { options })
+    this.options = options
+  }
+
   public removeOption(option: SelectOption<T>): void {
+    log("debug", "CripVueSelect.removeOption(option)", { option })
     this.options = this.options.filter(o => o === option ? false : true)
   }
 
   public selectOption(option: SelectOption<T>): void {
+    log("debug", "CripVueSelect.selectOption(option)", { option })
     emitter.$emit("select-option", option)
   }
 }
