@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue"
-import { CripSelectOption } from "../../types/plugin"
+import { SelectOption } from "../../types/plugin"
 
 export default Vue.extend({
   name: "CripTags",
@@ -16,7 +16,7 @@ export default Vue.extend({
   },
 
   methods: {
-    remove(option: CripSelectOption) {
+    remove(option: SelectOption) {
       this.$emit("remove", option)
     },
   },

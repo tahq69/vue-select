@@ -4,80 +4,34 @@ import "./assets/styles.scss"
 import install from "./install"
 
 import {
-  CripSelectOption,
-  CripSelectOptions,
+  CriteriaChanged,
   Install,
-  OnInit,
-  OnUpdate,
   Options,
   Settings,
-} from "../types/plugin"
+} from "$/plugin"
 
 export default class CripVueSelect {
   public static install: Install
   public static version: string
 
-  public async: boolean
   public loading: boolean[]
 
-  private options: Options
-  private onInitMethod: OnInit | undefined
-  private onUpdateMethod: OnUpdate | undefined
+  public async = false
+  public options: Options
+  public onCriteriaChange: CriteriaChanged[] = []
 
   constructor(settings: Settings) {
     this.loading = []
     if (Array.isArray(settings)) {
-      this.async = false
       this.options = settings
-    } else {
-      this.async = settings.async || false
-      this.onInitMethod = settings.onInit
-      this.onUpdateMethod = settings.onUpdate
-      this.options = settings.options || []
+      return
     }
-  }
 
-  public onUpdate(callback: OnUpdate): void {
-    this.onUpdateMethod = callback
-  }
+    this.options = settings.options || []
 
-  public onInit(callback: OnInit): void {
-    this.onInitMethod = callback
-  }
-
-  public init(select: (opt: CripSelectOption) => void, setOptions: (opts?: Options) => void): void {
-    if (this.onInitMethod) {
-      this.loading.push(true)
-
-      let spliced = false
-      const spliceOnce = () => {
-        if (!spliced) this.loading.splice(0, 1)
-        spliced = true
-      }
-
-      this.onInitMethod(
-        option => {
-          spliceOnce()
-          this.options.push(option)
-          select(option)
-        },
-        options => {
-          spliceOnce()
-          this.options = options
-          setOptions()
-        }
-      )
-    }
-  }
-
-  public update(criteria: string): void {
-    if (this.onUpdateMethod) {
-      this.loading.push(true)
-
-      this.onUpdateMethod(criteria, options => {
-        this.loading.splice(0, 1)
-        this.options = options
-      })
+    if (settings.onCriteriaChange) {
+      this.async = true
+      this.onCriteriaChange.push(settings.onCriteriaChange)
     }
   }
 }

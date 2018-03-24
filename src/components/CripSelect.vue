@@ -1,15 +1,17 @@
 <script lang="ts">
+// tslint:disable:object-literal-sort-keys
 import Vue from "vue"
 
-import { CripSelectOption, Options } from "$/plugin"
+import { Options, SelectOption } from "$/plugin"
 
 import ClickOutside from "@/directives/ClickOutside"
 import debounce from "../debounce"
 import { uuidv4 } from "../help"
+import CripVueSelect from "../main"
 import CripOptions from "./CripOptions.vue"
 import CripTags from "./CripTags.vue"
 
-function newOption(value: string): CripSelectOption {
+function newOption(value: string): SelectOption {
   return {
     key: uuidv4(),
     text: value,
@@ -44,27 +46,35 @@ export default Vue.extend({
     clear: { type: Boolean, default: false },
     count: { type: Number, default: 12 },
     multiple: { type: Boolean, default: false },
-    settings: { type: Object, default: () => ({}) },
+    settings: { type: CripVueSelect, required: false },
     id: { type: String, default: `crip-select-${uuidv4()}` },
     tags: { type: Boolean, default: false },
     value: { type: [String, Number, Boolean, Object, Array], required: false },
   },
 
   computed: {
+    tagRequired(): boolean {
+      return this.tags && this.criteria.length > 0
+    },
+
+    systemOptions(): SelectOption[] {
+      return this.tagRequired ? [newOption(this.criteria)] : []
+    },
+
+    hasOptions(): boolean {
+      return this.options && this.options.length > 0
+    },
+
+    hasSettingsOptions(): boolean {
+      return this.settings && this.settings.options && this.settings.options.length > 0
+    },
+
     dropdownOptions(): Options {
-      const results = this.tags && this.criteria.length > 0 ? [newOption(this.criteria)] : []
+      if (this.hasOptions) return this.filter(this.options).slice(0, this.count)
 
-      if (this.options && this.options.length > 0) {
-        const options = this.filter(this.options, results)
-        return options.slice(0, this.count)
-      }
+      if (this.hasSettingsOptions) return this.filter(this.settings.options).slice(0, this.count)
 
-      if (this.settings && this.settings.options && this.settings.options.length > 0) {
-        const options = this.filter(this.settings.options, results)
-        return options.slice(0, this.count)
-      }
-
-      return results.slice(0, this.count)
+      return this.systemOptions
     },
 
     isAnyFocused(): boolean {
@@ -74,20 +84,20 @@ export default Vue.extend({
 
   data() {
     return {
-      isOpen: false as boolean,
+      checkpoint: null as SelectOption | null,
       criteria: "" as string,
       current: -1 as number,
-      checkpoint: null as CripSelectOption | null,
+      isOpen: false as boolean,
       selected: [] as Options,
     }
   },
 
   methods: {
-    createCheckpoint(option: CripSelectOption): void {
+    createCheckpoint(option: SelectOption): void {
       this.checkpoint = option
     },
 
-    addTag(option: CripSelectOption): void {
+    addTag(option: SelectOption): void {
       this.selected.push(option)
       this.$emit("input", this.selected.map(opt => opt.value))
       this.criteria = ""
@@ -96,7 +106,7 @@ export default Vue.extend({
       if (this.dropdownOptions.length === 0) this.isOpen = false
     },
 
-    onTagRemove(option: CripSelectOption): void {
+    onTagRemove(option: SelectOption): void {
       this.selected.splice(this.selected.indexOf(option), 1)
       this.$emit("input", this.selected.map(opt => opt.value))
     },
@@ -109,7 +119,7 @@ export default Vue.extend({
       this.debounceInput()
     },
 
-    onSelect(option: CripSelectOption): void {
+    onSelect(option: SelectOption): void {
       if (this.multiple) {
         this.addTag(option)
         return
@@ -198,7 +208,7 @@ export default Vue.extend({
       }
     },
 
-    filter(options: Options, systemOptions: Options): Options {
+    filter(options: Options): Options {
       if (!this.multiple && this.criteria.length < 3) return options
 
       const results = options.filter(option => {
@@ -206,7 +216,7 @@ export default Vue.extend({
         if (this.multiple && this.selected.filter(v => v.key === option.key).length > 0)
           return false
 
-        // Filter by text when value is not selected or criteria i not same as
+        // Filter by text when value is not selected or criteria is not same as
         // selected value.
         if (!this.checkpoint || this.checkpoint.text !== this.criteria)
           return option.text.indexOf(this.criteria) > -1
@@ -214,13 +224,11 @@ export default Vue.extend({
         return true
       })
 
-      if (
-        systemOptions.length > 0 &&
-        results.filter(o => o.text === systemOptions[0].text).length === 0
-      ) {
+      const criteriaInResults = results.filter(o => o.text === this.criteria)
+      if (this.tagRequired && criteriaInResults.length === 0) {
         // Unshift system option only if text does not occurs in defined
         // options.
-        results.unshift(systemOptions[0])
+        results.unshift(newOption(this.criteria))
       }
 
       return results
@@ -228,7 +236,6 @@ export default Vue.extend({
 
     setupFromValue(value: any) {
       if (typeof value !== "undefined" && (!this.settings || !this.settings.async)) {
-        console.log("setupFromValue", this.dropdownOptions.map(o => o.value), value)
         this.dropdownOptions.forEach(opt => {
           if (opt.value === value) this.onSelect(opt)
         })
@@ -236,8 +243,12 @@ export default Vue.extend({
     },
 
     asyncUpdate() {
-      if (this.settings && this.settings.async && this.settings.update) {
-        this.settings.update(this.criteria)
+      if (this.settings && this.settings.async) {
+        const resultOptions: SelectOption[] = []
+        this.settings.onCriteriaChange.forEach(listenner => {
+          listenner(this.criteria, options => resultOptions.concat(options))
+        })
+        this.settings.options = resultOptions
       }
     },
 
@@ -248,25 +259,11 @@ export default Vue.extend({
 
   mounted() {
     this.setupFromValue(this.value)
-    this.settings.init(
-      (option: CripSelectOption) => {
-        // Option is not required, as it may be chosen by model value from
-        // options, or can be overwritten on init stage by this value.
-        if (option) this.onSelect(option)
-      },
-      () => {
-        // Allow user setup options once, when initializing component and try to
-        // select value from model ath that moment.
-        this.setupFromValue(this.value)
-      }
-    )
-
     this.asyncUpdate()
   },
 
   watch: {
     value(newVal: any) {
-      console.log("watch:value", newVal)
       this.setupFromValue(newVal)
     },
   },

@@ -1,28 +1,25 @@
 import Vue from "vue"
 
-export type UpdateOptions<T = any> = (options: Options<T>) => void
-export type SelectOption<T = any> = (option: CripSelectOption<T>) => void
-export type OnInit<T = any> = (select: SelectOption<T>, updateOptions: UpdateOptions<T>) => void
-export type OnUpdate<T = any> = (criteria: string, update: UpdateOptions<T>) => void
-export type Options<T = any> = CripSelectOption<T>[]
-export type Install = (vue: typeof Vue, options?: CripSelectOptions) => void
+export type OptionKey = string | number
+export type Options<T = any> = SelectOption<T>[]
+export type SetAvailableOptions<T = any> = (options: Options<T>) => void
+export type CriteriaChanged<T = any> = (criteria: string, setOptions: SetAvailableOptions<T>) => void
+export type Install = (vue: typeof Vue, options?: CripSelectInstallSettings) => void
 export type Settings<T = any> = CripSelectConstructorSettings<T> | Options<T>
 
-export interface CripSelectConstructorSettings<T = any> {
-  options?: Options<T>
-  async?: boolean
-  onUpdate?: OnUpdate<T>
-  onInit?: OnInit<T>
+export interface SelectOption<T = any> {
+  key: OptionKey
+  text: string
+  value: T
 }
 
-export interface CripSelectOptions {
+export interface CripSelectInstallSettings {
   componentPrefix: string
 }
 
-export interface CripSelectOption<T = any> {
-  key: string | number
-  text: string
-  value: T
+export interface CripSelectConstructorSettings<T = any> {
+  options?: Options<T>
+  onCriteriaChange?: CriteriaChanged<T>
 }
 
 export declare class Plugin<T = any> {
@@ -30,7 +27,8 @@ export declare class Plugin<T = any> {
   static install: Install
   static version: string
 
-  async: boolean
-  onUpdate(callback: OnUpdate<T>): void
-  onInit(callback: OnInit<T>): void
+  onCriteriaChange(action: CriteriaChanged<T>): void
+  addOption(options: Options<T> | SelectOption<T>): void
+  removeOption(option: SelectOption<T>): void
+  selectOption(option: SelectOption<T>): void
 }

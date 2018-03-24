@@ -1,6 +1,8 @@
 <script lang="ts">
+// tslint:disable:object-literal-sort-keys
 import Vue from "vue"
-import { CripSelectOption } from "../../types/plugin"
+
+import { SelectOption } from "$/plugin"
 
 import CripOption from "./CripOption.vue"
 
@@ -16,17 +18,17 @@ export default Vue.extend({
   },
 
   computed: {
-    currentValue(): CripSelectOption | undefined {
+    currentValue(): SelectOption | undefined {
       return this.options[this.current] || undefined
     },
   },
 
   methods: {
-    select(option: CripSelectOption) {
+    select(option: SelectOption) {
       this.$emit("select", option)
     },
 
-    isActive(option: CripSelectOption) {
+    isActive(option: SelectOption) {
       if (!this.currentValue) return false
       return this.currentValue.key === option.key
     },

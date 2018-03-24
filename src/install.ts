@@ -1,18 +1,18 @@
 import Vue from "vue"
 
+import { CripSelectInstallSettings } from "$/plugin"
 import CripSelect from "./components/CripSelect.vue"
-import { Options } from "./contracts"
 
 let installed = false
 let privateVue: any
 
-export default function install(vue: typeof Vue, options?: Options): void {
+export default function install(vue: typeof Vue, options?: CripSelectInstallSettings): void {
   if (installed && privateVue === vue) return
 
   installed = true
   privateVue = vue
 
-  const defaults: Options = {
+  const defaults: CripSelectInstallSettings = {
     componentPrefix: "Crip",
   }
 
