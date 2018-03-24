@@ -6,6 +6,7 @@ import { Options, SelectOption } from "$/plugin"
 
 import ClickOutside from "@/directives/ClickOutside"
 import debounce from "../debounce"
+import emitter from "../emitter"
 import { log, uuidv4 } from "../help"
 import CripVueSelect from "../main"
 import CripOptions from "./CripOptions.vue"
@@ -271,7 +272,7 @@ export default Vue.extend({
       log("debug", "asyncUpdate()", { settings: this.settings })
       if (this.settings && this.settings.async) {
         const resultOptions: SelectOption[] = []
-        this.settings.onCriteriaChange.forEach(listenner => {
+        this.settings.onCriteriaChangeStack.forEach(listenner => {
           listenner(this.criteria, options => resultOptions.concat(options))
         })
 
@@ -289,6 +290,8 @@ export default Vue.extend({
     log("debug", "CripSelect.vue", "mounted")
     this.setupFromValue(this.value)
     this.asyncUpdate()
+
+    emitter.$on("select-option", (option: SelectOption) => this.onSelect(option))
   },
 
   watch: {
