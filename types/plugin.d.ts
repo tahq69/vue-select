@@ -4,7 +4,7 @@ export type LogLevel = "debug" | "log" | "warn" | "error"
 
 export type OptionKey = string | number
 export type Options<T = any> = SelectOption<T>[]
-export type SetAvailableOptions<T = any> = (options: Options<T>, id: string | null = null) => void
+export type SetAvailableOptions<T = any> = (options: Options<T>, id?: string) => void
 export type CriteriaChanged<T = any> = (criteria: string, setOptions: SetAvailableOptions<T>, id: string) => void
 export type Install = (vue: typeof Vue, options?: CripSelectOptions) => void
 export type Settings<T = any> = CripSelectConstructorSettings<T> | Options<T>
