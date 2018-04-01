@@ -48,8 +48,10 @@ export default class CripVueSelect<T = any> {
 
   public addOption(options: Options<T> | SelectOption<T>): void {
     log("debug", "CripVueSelect.addOption(options)", { options })
-    if (Array.isArray(options)) this.options = this.options.concat(options)
-    else this.options.push(options)
+    if (Array.isArray(options))
+      options.forEach(o => this.addSingleOption(o))
+    else
+      this.addSingleOption(options)
   }
 
   public setOptions(options: Options<T>) {
@@ -65,6 +67,15 @@ export default class CripVueSelect<T = any> {
   public selectOption(option: SelectOption<T>): void {
     log("debug", "CripVueSelect.selectOption(option)", { option })
     emitter.$emit("select-option", option)
+  }
+
+  private addSingleOption(option: SelectOption<T>): void {
+    if (this.options.filter((o => o.key === option.key)).length > 0) {
+      log("warn", `Duplicate key detected: '${option.key}'. This may cause an update error.`)
+      return
+    }
+
+    this.options.push(option)
   }
 }
 

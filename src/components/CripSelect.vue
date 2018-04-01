@@ -324,6 +324,7 @@ export default Vue.extend({
                 @remove="onTagRemove" />
 
       <input :value="criteria"
+             autocomplete="off"
              @input="onInput($event.target.value)"
              @focus="onFocus"
              @keydown.space.ctrl="onCtrlSpace"
