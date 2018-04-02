@@ -261,12 +261,25 @@ export default Vue.extend({
     },
 
     setupFromValue(value: any) {
-      log("debug", this.id, "setupFromValue(value)", { value })
-      if (typeof value !== "undefined" && (!this.settings || !this.settings.async)) {
+      const isValidSetup = typeof value !== "undefined" && (!this.settings || !this.settings.async)
+      const isMultiselectValue = this.multiple && Array.isArray(value)
+
+      log("debug", this.id, "setupFromValue(value)", { value, isValidSetup, isMultiselectValue })
+
+      if (isValidSetup) {
         this.dropdownOptions.forEach(opt => {
-          if (opt.value === value) this.onSelect(opt)
+          if (isMultiselectValue) value.forEach((val: any) => this.selectByValue(opt, val))
+          else this.selectByValue(opt, value)
         })
       }
+    },
+
+    selectByValue(opt: SelectOption, value: any) {
+      const areEqual = opt.value === value
+
+      log("debug", this.id, "setupFromValue(value).compare", { value, opt, areEqual })
+
+      if (areEqual) this.onSelect(opt)
     },
 
     asyncUpdate() {
